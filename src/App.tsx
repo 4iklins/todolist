@@ -17,11 +17,16 @@ export type FilterType = 'all' | 'completed' | 'active';
 function App() {
   const [filter, setFilter] = useState<FilterType>('all');
   const [tasks, setTasks] = useState<TaskType[]>(tasks1);
+
   const removeTask = (id: string) => {
     setTasks(tasks.filter(task => task.id !== id));
   };
   const addTask = (title: string) => {
     setTasks([{ id: v1(), title: title, isDone: false }, ...tasks]);
+  };
+
+  const changeTaskStatus = (taskId: string) => {
+    setTasks(tasks.map(task => (task.id === taskId ? { ...task, isDone: !task.isDone } : task)));
   };
 
   let taskForTodoList = tasks;
@@ -41,9 +46,11 @@ function App() {
       <Todolist
         title='What to learn'
         tasks={taskForTodoList}
+        filter={filter}
         addTask={addTask}
         removeTask={removeTask}
         changeFilter={changeFilter}
+        changeTaskStatus={changeTaskStatus}
       />
     </div>
   );
