@@ -7,18 +7,3 @@
   margin-right: 50px;
 }
 
-.completed-task {
-  opacity: 0.5;
-}
-
-.btn-filter-ctive {
-  background-color: aquamarine;
-}
-
-.error-value {
-  outline: 1px solid red;
-}
-
-.error-message {
-  color: red;
-}

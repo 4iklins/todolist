@@ -1,5 +1,7 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { FilterType } from './App';
+import styles from './todolist.module.css';
+import cn from 'classnames';
 
 export interface TodoListProps {
   title: string;
@@ -42,17 +44,21 @@ const Todolist = (props: TodoListProps) => {
   };
 
   return (
-    <div>
+    <div className={styles.todolist}>
       <h3>{props.title}</h3>
       <div>
         <input
           value={title}
           onChange={onInputChangeHandler}
           onKeyDown={onEnterPressHandler}
-          className={error ? 'error-value' : ''}
+          className={cn(styles.taskInput, {
+            [styles.errorInput]: error,
+          })}
         />
-        <button onClick={addTask}>+</button>
-        {error && <div className='error-message'>Title is reauired</div>}
+        <button onClick={addTask} disabled={!title}>
+          Add
+        </button>
+        {error && <div className={styles.error}>Title is required</div>}
       </div>
       <ul>
         {props.tasks.map(task => {
@@ -60,25 +66,37 @@ const Todolist = (props: TodoListProps) => {
             props.changeTaskStatus(task.id);
           };
           return (
-            <li key={task.id} className={task.isDone ? 'completed-task' : ''}>
+            <li
+              key={task.id}
+              className={cn(styles.task, {
+                [styles.completedTask]: task.isDone,
+              })}>
               <input type='checkbox' checked={task.isDone} onChange={onChangeTaskStatusHandler} />
               <span>{task.title}</span>
-              <button onClick={() => props.removeTask(task.id)}>✖️</button>
+              <button className={cn(styles.btnDel)} onClick={() => props.removeTask(task.id)}></button>
             </li>
           );
         })}
       </ul>
       <div>
-        <button className={props.filter === 'all' ? 'btn-filter-ctive' : ''} onClick={() => props.changeFilter('all')}>
+        <button
+          className={cn(styles.btn, {
+            [styles.btnActive]: props.filter === 'all',
+          })}
+          onClick={() => props.changeFilter('all')}>
           All
         </button>
         <button
-          className={props.filter === 'active' ? 'btn-filter-ctive' : ''}
+          className={cn(styles.btn, {
+            [styles.btnActive]: props.filter === 'active',
+          })}
           onClick={() => props.changeFilter('active')}>
           Active
         </button>
         <button
-          className={props.filter === 'completed' ? 'btn-filter-ctive' : ''}
+          className={cn(styles.btn, {
+            [styles.btnActive]: props.filter === 'completed',
+          })}
           onClick={() => props.changeFilter('completed')}>
           Completed
         </button>

@@ -22,7 +22,7 @@ function App() {
     setTasks(tasks.filter(task => task.id !== id));
   };
   const addTask = (title: string) => {
-    setTasks([{ id: v1(), title: title, isDone: false }, ...tasks]);
+    setTasks([...tasks, { id: v1(), title: title, isDone: false }]);
   };
 
   const changeTaskStatus = (taskId: string) => {
