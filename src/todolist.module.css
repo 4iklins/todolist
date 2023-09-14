@@ -13,6 +13,11 @@ button {
   padding: 20px;
 }
 
+.head {
+  display: flex;
+  align-items: center;
+}
+
 .taskInput {
   margin-right: 10px;
 }
