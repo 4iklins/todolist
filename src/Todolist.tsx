@@ -1,7 +1,7 @@
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import { FilterType } from './App';
+import { FilterType, TaskType } from './App';
 import styles from './todolist.module.css';
 import cn from 'classnames';
+import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
 
 export interface TodoListProps {
   id: string;
@@ -15,56 +15,17 @@ export interface TodoListProps {
   removeTodolist: (todolistId: string) => void;
 }
 
-export type TaskType = {
-  id: string;
-  title: string;
-  isDone: boolean;
-};
-
 const Todolist = (props: TodoListProps) => {
-  const [title, setTitle] = useState<string>('');
-  const [error, setError] = useState<boolean>(false);
-  const onInputChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
-    setError(false);
-    setTitle(evt.currentTarget.value);
+  const addTask = (title: string) => {
+    props.addTask(title, props.id);
   };
-
-  const onEnterPressHandler = (evt: KeyboardEvent<HTMLInputElement>) => {
-    if (evt.key === 'Enter') {
-      addTask();
-    }
-  };
-
-  const addTask = () => {
-    if (title && title.trim() !== '') {
-      props.addTask(title.trim(), props.id);
-      setTitle('');
-    } else {
-      setError(true);
-      setTitle('');
-    }
-  };
-
   return (
     <div className={styles.todolist}>
       <h3 className={styles.head}>
         {props.title}
         <button className={cn(styles.btnDel)} onClick={() => props.removeTodolist(props.id)}></button>
       </h3>
-      <div>
-        <input
-          value={title}
-          onChange={onInputChangeHandler}
-          onKeyDown={onEnterPressHandler}
-          className={cn(styles.taskInput, {
-            [styles.errorInput]: error,
-          })}
-        />
-        <button onClick={addTask} disabled={!title}>
-          Add
-        </button>
-        {error && <div className={styles.error}>Title is required</div>}
-      </div>
+      <AddItemForm addItem={addTask} />
       <ul>
         {props.tasks.map(task => {
           const onChangeTaskStatusHandler = () => {

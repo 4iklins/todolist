@@ -1,8 +1,9 @@
 import React from 'react';
 import './App.css';
-import Todolist, { TaskType } from './Todolist';
+import Todolist from './Todolist';
 import { useState } from 'react';
 import { v1 } from 'uuid';
+import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
 
 const todolistId1 = v1();
 const todolistId2 = v1();
@@ -12,12 +13,17 @@ const todolistsArray: TodolistType[] = [
   { id: todolistId2, title: 'What to buy', filter: 'all' },
 ];
 
-interface TodolistType {
+export interface TodolistType {
   id: string;
   title: string;
   filter: FilterType;
 }
-interface TasksStateType {
+export interface TaskType {
+  id: string;
+  title: string;
+  isDone: boolean;
+}
+export interface TasksStateType {
   [key: string]: TaskType[];
 }
 
@@ -39,6 +45,12 @@ export type FilterType = 'all' | 'completed' | 'active';
 function App() {
   const [todolists, setTodolists] = useState<TodolistType[]>(todolistsArray);
   const [tasks, setTasks] = useState<TasksStateType>(tasksState);
+
+  const addTodolist = (title: string) => {
+    const newTodolistId = v1();
+    setTodolists([...todolists, { id: newTodolistId, title, filter: 'all' }]);
+    setTasks({ ...tasks, [newTodolistId]: [] });
+  };
 
   const removeTodolist = (todolistId: string) => {
     setTodolists(todolists.filter(tl => tl.id !== todolistId));
@@ -91,7 +103,12 @@ function App() {
     );
   });
 
-  return <div className='App'>{todolistComponents}</div>;
+  return (
+    <div className='App'>
+      <AddItemForm addItem={addTodolist} />
+      {todolistComponents}
+    </div>
+  );
 }
 
 export default App;
