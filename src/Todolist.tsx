@@ -41,7 +41,17 @@ const Todolist = (props: TodoListProps) => {
           const removeTaskHandler = (id: string) => {
             props.removeTask(id, props.id);
           };
-          return <Task {...task} onChangeStatus={onChangeTaskStatusHandler} removeTask={removeTaskHandler} />;
+          const onChangeTaskTitleHandler = (title: string) => {
+            props.changeTaskTitle(task.id, props.id, title);
+          };
+          return (
+            <Task
+              {...task}
+              onChangeStatus={onChangeTaskStatusHandler}
+              removeTask={removeTaskHandler}
+              changeTaskTitle={onChangeTaskTitleHandler}
+            />
+          );
         })}
       </ul>
       <div>
