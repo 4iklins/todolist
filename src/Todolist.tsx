@@ -2,6 +2,7 @@ import { FilterType, TaskType } from './App';
 import styles from './todolist.module.css';
 import cn from 'classnames';
 import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import Task from './components/Task/Task';
 
 export interface TodoListProps {
   id: string;
@@ -31,17 +32,10 @@ const Todolist = (props: TodoListProps) => {
           const onChangeTaskStatusHandler = () => {
             props.changeTaskStatus(task.id, props.id);
           };
-          return (
-            <li
-              key={task.id}
-              className={cn(styles.task, {
-                [styles.completedTask]: task.isDone,
-              })}>
-              <input type='checkbox' checked={task.isDone} onChange={onChangeTaskStatusHandler} />
-              <span>{task.title}</span>
-              <button className={cn(styles.btnDel)} onClick={() => props.removeTask(task.id, props.id)}></button>
-            </li>
-          );
+          const removeTaskHandler = (id: string) => {
+            props.removeTask(id, props.id);
+          };
+          return <Task {...task} onChangeStatus={onChangeTaskStatusHandler} removeTask={removeTaskHandler} />;
         })}
       </ul>
       <div>
