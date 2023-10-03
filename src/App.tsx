@@ -1,9 +1,10 @@
-import React from 'react';
 import './App.css';
 import Todolist from './Todolist';
 import { useState } from 'react';
 import { v1 } from 'uuid';
 import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import { AppBar, Button, Container, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 
 const todolistId1 = v1();
 const todolistId2 = v1();
@@ -101,6 +102,7 @@ function App() {
 
     return (
       <Todolist
+        key={todolist.id}
         id={todolist.id}
         title={todolist.title}
         tasks={taskForRender}
@@ -118,8 +120,25 @@ function App() {
 
   return (
     <div className='App'>
-      <AddItemForm addItem={addTodolist} />
-      {todolistComponents}
+      <AppBar position='static'>
+        <Toolbar>
+          <IconButton color='inherit'>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant='h6'>Todolist</Typography>
+          <Button color='inherit' sx={{ ml: 'auto' }}>
+            Login
+          </Button>
+        </Toolbar>
+      </AppBar>
+      <Container maxWidth={'lg'}>
+        <Grid container justifyContent={'center'}>
+          <AddItemForm addItem={addTodolist} label='Todolist title' />
+        </Grid>
+        <Grid container gap={4}>
+          {todolistComponents}
+        </Grid>
+      </Container>
     </div>
   );
 }

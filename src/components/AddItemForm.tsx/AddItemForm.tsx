@@ -1,8 +1,10 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
-import styles from './addTaskForm.module.css';
-import cn from 'classnames';
+import Grid from '@mui/material/Unstable_Grid2';
+import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 
 interface AddItemFormType {
+  label: string;
   addItem: (title: string) => void;
 }
 
@@ -29,20 +31,27 @@ const AddItemForm = (props: AddItemFormType) => {
     }
   };
   return (
-    <div>
-      <input
+    <Grid container>
+      <TextField
         value={title}
+        label={props.label}
         onChange={onInputChangeHandler}
         onKeyDown={onEnterPressHandler}
-        className={cn(styles.taskInput, {
-          [styles.errorInput]: error,
-        })}
+        size='small'
+        error={!!error}
+        helperText={!!error && 'Title is required'}
+        fullWidth
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position='end'>
+              <IconButton onClick={addItem} disabled={!title} color='primary' size='large' sx={{ p: 0 }}>
+                <AddBoxIcon fontSize='inherit' />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
       />
-      <button onClick={addItem} disabled={!title}>
-        Add
-      </button>
-      {error && <div className={styles.error}>Title is required</div>}
-    </div>
+    </Grid>
   );
 };
 

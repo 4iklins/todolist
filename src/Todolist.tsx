@@ -1,9 +1,10 @@
 import { FilterType, TaskType } from './App';
 import styles from './todolist.module.css';
-import cn from 'classnames';
 import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
 import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
+import { Box, Button, IconButton, List } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
 
 export interface TodoListProps {
   id: string;
@@ -27,13 +28,15 @@ const Todolist = (props: TodoListProps) => {
     props.changeTodolistTitle(props.id, title);
   };
   return (
-    <div className={styles.todolist}>
-      <h3 className={styles.head}>
+    <div>
+      <h3>
         <EditableSpan title={props.title} changeTitle={changeTitle} />
-        <button className={cn(styles.btnDel)} onClick={() => props.removeTodolist(props.id)}></button>
+        <IconButton onClick={() => props.removeTodolist(props.id)} size='small' color='primary'>
+          <ClearIcon fontSize='inherit' />
+        </IconButton>
       </h3>
-      <AddItemForm addItem={addTask} />
-      <ul>
+      <AddItemForm addItem={addTask} label='Task title' />
+      <List>
         {props.tasks.map(task => {
           const onChangeTaskStatusHandler = () => {
             props.changeTaskStatus(task.id, props.id);
@@ -47,36 +50,34 @@ const Todolist = (props: TodoListProps) => {
           return (
             <Task
               {...task}
+              key={task.id}
               onChangeStatus={onChangeTaskStatusHandler}
               removeTask={removeTaskHandler}
               changeTaskTitle={onChangeTaskTitleHandler}
             />
           );
         })}
-      </ul>
-      <div>
-        <button
-          className={cn(styles.btn, {
-            [styles.btnActive]: props.filter === 'all',
-          })}
+      </List>
+      <Box sx={{ 'button + button': { ml: 1 } }}>
+        <Button
+          variant={props.filter === 'all' ? 'contained' : 'outlined'}
+          size='small'
           onClick={() => props.changeFilter('all', props.id)}>
           All
-        </button>
-        <button
-          className={cn(styles.btn, {
-            [styles.btnActive]: props.filter === 'active',
-          })}
+        </Button>
+        <Button
+          variant={props.filter === 'active' ? 'contained' : 'outlined'}
+          size='small'
           onClick={() => props.changeFilter('active', props.id)}>
           Active
-        </button>
-        <button
-          className={cn(styles.btn, {
-            [styles.btnActive]: props.filter === 'completed',
-          })}
+        </Button>
+        <Button
+          variant={props.filter === 'completed' ? 'contained' : 'outlined'}
+          size='small'
           onClick={() => props.changeFilter('completed', props.id)}>
           Completed
-        </button>
-      </div>
+        </Button>
+      </Box>
     </div>
   );
 };
