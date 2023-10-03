@@ -3,7 +3,7 @@ import Todolist from './Todolist';
 import { useState } from 'react';
 import { v1 } from 'uuid';
 import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
-import { AppBar, Button, Container, Grid, IconButton, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 const todolistId1 = v1();
@@ -101,26 +101,29 @@ function App() {
     const taskForRender = getTasksForRender(todolist, todolist.id);
 
     return (
-      <Todolist
-        key={todolist.id}
-        id={todolist.id}
-        title={todolist.title}
-        tasks={taskForRender}
-        filter={todolist.filter}
-        addTask={addTask}
-        removeTask={removeTask}
-        changeFilter={changeFilter}
-        changeTaskStatus={changeTaskStatus}
-        removeTodolist={removeTodolist}
-        changeTaskTitle={changeTaskTitle}
-        changeTodolistTitle={changeTodolistTitle}
-      />
+      <Grid item key={todolist.id} xs={3}>
+        <Paper elevation={3} sx={{ p: 2 }}>
+          <Todolist
+            id={todolist.id}
+            title={todolist.title}
+            tasks={taskForRender}
+            filter={todolist.filter}
+            addTask={addTask}
+            removeTask={removeTask}
+            changeFilter={changeFilter}
+            changeTaskStatus={changeTaskStatus}
+            removeTodolist={removeTodolist}
+            changeTaskTitle={changeTaskTitle}
+            changeTodolistTitle={changeTodolistTitle}
+          />
+        </Paper>
+      </Grid>
     );
   });
 
   return (
     <div className='App'>
-      <AppBar position='static'>
+      <AppBar position='fixed'>
         <Toolbar>
           <IconButton color='inherit'>
             <MenuIcon />
@@ -131,11 +134,13 @@ function App() {
           </Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth={'lg'}>
-        <Grid container justifyContent={'center'}>
-          <AddItemForm addItem={addTodolist} label='Todolist title' />
+      <Container maxWidth={'lg'} sx={{ mt: '64px' }}>
+        <Grid container justifyContent={'center'} sx={{ p: '24px 0' }}>
+          <Grid item sx={{ width: 'calc(100% / 3.3) ' }}>
+            <AddItemForm addItem={addTodolist} label='Todolist title' />
+          </Grid>
         </Grid>
-        <Grid container gap={4}>
+        <Grid container spacing={3}>
           {todolistComponents}
         </Grid>
       </Container>
