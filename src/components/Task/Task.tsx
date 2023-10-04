@@ -11,7 +11,7 @@ interface TaskProps extends TaskType {
 
 const Task = ({ id, title, isDone, onChangeStatus, removeTask, changeTaskTitle }: TaskProps) => {
   return (
-    <ListItem sx={{ p: 0, '& button': { ml: 'auto' } }}>
+    <ListItem sx={{ p: 0, '& button': { ml: 'auto' } }} divider>
       <Checkbox checked={isDone} onChange={onChangeStatus} sx={{ pl: 0 }} />
       <EditableSpan title={title} changeTitle={changeTaskTitle} />
       <IconButton onClick={() => removeTask(id)} size='small' color='primary'>

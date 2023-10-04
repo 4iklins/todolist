@@ -24,7 +24,9 @@ const EditableSpan = ({ title, changeTitle }: EditableSpanPropsType) => {
   return editmode ? (
     <TextField value={text} onBlur={activeViewMode} autoFocus onChange={onChangeHandler} size='small'></TextField>
   ) : (
-    <span onDoubleClick={activeEditMode}>{title}</span>
+    <span style={{ wordWrap: 'break-word',overflowX:'hidden' }} onDoubleClick={activeEditMode}>
+      {title}
+    </span>
   );
 };
 

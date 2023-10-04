@@ -101,7 +101,7 @@ function App() {
     const taskForRender = getTasksForRender(todolist, todolist.id);
 
     return (
-      <Grid item key={todolist.id} xs={3}>
+      <Grid item key={todolist.id} xl={3} lg={4} md={6} xs={12}>
         <Paper elevation={3} sx={{ p: 2 }}>
           <Todolist
             id={todolist.id}
@@ -128,19 +128,21 @@ function App() {
           <IconButton color='inherit'>
             <MenuIcon />
           </IconButton>
-          <Typography variant='h6'>Todolist</Typography>
+          <Typography variant='h6' component='h1'>
+            Todolist
+          </Typography>
           <Button color='inherit' sx={{ ml: 'auto' }}>
             Login
           </Button>
         </Toolbar>
       </AppBar>
-      <Container maxWidth={'lg'} sx={{ mt: '64px' }}>
-        <Grid container justifyContent={'center'} sx={{ p: '24px 0' }}>
-          <Grid item sx={{ width: 'calc(100% / 3.3) ' }}>
+      <Container maxWidth={'xl'} sx={{ mt: '64px' }}>
+        <Grid container sx={{ p: '24px 0' }}>
+          <Grid item xl={3} lg={4} md={6} xs={12}>
             <AddItemForm addItem={addTodolist} label='Todolist title' />
           </Grid>
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {todolistComponents}
         </Grid>
       </Container>

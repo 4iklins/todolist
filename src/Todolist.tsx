@@ -3,8 +3,8 @@ import styles from './todolist.module.css';
 import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
 import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
-import { Box, Button, IconButton, List } from '@mui/material';
-import ClearIcon from '@mui/icons-material/Clear';
+import { Box, Button, IconButton, List, Typography } from '@mui/material';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 export interface TodoListProps {
   id: string;
@@ -29,14 +29,17 @@ const Todolist = (props: TodoListProps) => {
   };
   return (
     <div>
-      <h3>
+      <Typography variant='h6' component='h2' display={'flex'} mb={3}>
         <EditableSpan title={props.title} changeTitle={changeTitle} />
-        <IconButton onClick={() => props.removeTodolist(props.id)} size='small' color='primary'>
-          <ClearIcon fontSize='inherit' />
+        <IconButton
+          onClick={() => props.removeTodolist(props.id)}
+          color='primary'
+          sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}>
+          <DeleteForeverIcon fontSize='inherit' />
         </IconButton>
-      </h3>
+      </Typography>
       <AddItemForm addItem={addTask} label='Task title' />
-      <List>
+      <List sx={{ maxHeight: '172px', minHeight: '172px', overflowY: 'auto', p: 0, m: '10px 0' }}>
         {props.tasks.map(task => {
           const onChangeTaskStatusHandler = () => {
             props.changeTaskStatus(task.id, props.id);
