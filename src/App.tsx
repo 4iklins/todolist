@@ -28,7 +28,7 @@ export interface TasksStateType {
   [key: string]: TaskType[];
 }
 
-const tasksState = {
+const tasksState: TasksStateType = {
   [todolistId1]: [
     { id: v1(), title: 'HTML&CSS', isDone: true },
     { id: v1(), title: 'JS', isDone: true },
@@ -78,10 +78,10 @@ function App() {
     });
   };
 
-  const changeTaskTitle = (tasksId: string, tododlistId: string, taskTitle: string) => {
+  const changeTaskTitle = (taskId: string, tododlistId: string, taskTitle: string) => {
     setTasks({
       ...tasks,
-      [tododlistId]: tasks[tododlistId].map(task => (task.id === tasksId ? { ...task, title: taskTitle } : task)),
+      [tododlistId]: tasks[tododlistId].map(task => (task.id === taskId ? { ...task, title: taskTitle } : task)),
     });
   };
 

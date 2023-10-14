@@ -12,6 +12,7 @@ export interface AddTodoListAT {
   type: 'ADD-TODOLIST';
   payload: {
     todolistTitle: string;
+    todolistId: string;
   };
 }
 
@@ -38,7 +39,7 @@ export const todolistsReducer = (state: TodolistType[], action: ActionType): Tod
     case 'REMOVE-TODOLIST':
       return state.filter(tl => tl.id !== action.payload.todolistId);
     case 'ADD-TODOLIST':
-      return [...state, { id: v1(), title: action.payload.todolistTitle, filter: 'all' }];
+      return [...state, { id: action.payload.todolistId, title: action.payload.todolistTitle, filter: 'all' }];
     case 'CHANGE-TITLE':
       return state.map(tl =>
         tl.id === action.payload.todolistId ? { ...tl, title: action.payload.todolistTitle } : tl
@@ -58,7 +59,7 @@ export const removeTodolistAC = (todolistId: string): RemoveTodolistAT => ({
 });
 export const addTodolistAC = (todolistTitle: string): AddTodoListAT => ({
   type: 'ADD-TODOLIST',
-  payload: { todolistTitle },
+  payload: { todolistTitle, todolistId: v1() },
 });
 export const changeTitleAC = (todolistId: string, todolistTitle: string): ChangeTodolistTitleAT => ({
   type: 'CHANGE-TITLE',
