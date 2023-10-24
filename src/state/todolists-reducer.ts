@@ -1,5 +1,5 @@
 import { v1 } from 'uuid';
-import { TodolistType, FilterType } from '../App';
+import { initState } from './initstate';
 
 export interface RemoveTodolistAT {
   type: 'REMOVE-TODOLIST';
@@ -32,9 +32,18 @@ export interface ChangeTodolistFilterAT {
   };
 }
 
-type ActionType = AddTodoListAT | RemoveTodolistAT | ChangeTodolistTitleAT | ChangeTodolistFilterAT;
+export type ActionTodolistsType = AddTodoListAT | RemoveTodolistAT | ChangeTodolistTitleAT | ChangeTodolistFilterAT;
 
-export const todolistsReducer = (state: TodolistType[], action: ActionType): TodolistType[] => {
+export interface TodolistType {
+  id: string;
+  title: string;
+  filter: FilterType;
+}
+export type FilterType = 'all' | 'completed' | 'active';
+
+const initialState: TodolistType[] = initState.todolists;
+
+export const todolistsReducer = (state = initialState, action: ActionTodolistsType): TodolistType[] => {
   switch (action.type) {
     case 'REMOVE-TODOLIST':
       return state.filter(tl => tl.id !== action.payload.todolistId);
@@ -61,7 +70,7 @@ export const addTodolistAC = (todolistTitle: string): AddTodoListAT => ({
   type: 'ADD-TODOLIST',
   payload: { todolistTitle, todolistId: v1() },
 });
-export const changeTitleAC = (todolistId: string, todolistTitle: string): ChangeTodolistTitleAT => ({
+export const changeTodolistTitleAC = (todolistId: string, todolistTitle: string): ChangeTodolistTitleAT => ({
   type: 'CHANGE-TITLE',
   payload: { todolistId, todolistTitle },
 });
