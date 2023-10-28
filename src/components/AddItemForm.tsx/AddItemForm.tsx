@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, memo, useState } from 'react';
 import Grid from '@mui/material/Unstable_Grid2';
 import { FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -8,7 +8,7 @@ interface AddItemFormType {
   addItem: (title: string) => void;
 }
 
-const AddItemForm = (props: AddItemFormType) => {
+const AddItemForm = memo((props: AddItemFormType) => {
   const [title, setTitle] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
   const onInputChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +30,7 @@ const AddItemForm = (props: AddItemFormType) => {
       setTitle('');
     }
   };
+  
   return (
     <Grid container>
       <TextField
@@ -53,6 +54,6 @@ const AddItemForm = (props: AddItemFormType) => {
       />
     </Grid>
   );
-};
+});
 
 export default AddItemForm;

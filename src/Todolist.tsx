@@ -5,7 +5,6 @@ import Task from './components/Task/Task';
 import { Box, Button, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-
 export interface TodoListProps {
   todolist: TodolistType;
   tasks: TaskType[];
@@ -35,17 +34,17 @@ const Todolist = ({
   const changeTitle = (title: string) => {
     changeTodolistTitle(todolist.id, title);
   };
+  const onChangeTaskStatusHandler = (taskId: string, isDone: boolean) => {
+    changeTaskStatus(taskId, isDone, todolist.id);
+  };
+  const removeTaskHandler = (id: string) => {
+    removeTask(id, todolist.id);
+  };
+  const onChangeTaskTitleHandler = (taskId: string, title: string) => {
+    changeTaskTitle(taskId, todolist.id, title);
+  };
 
   const tasksForRender = tasks.map(task => {
-    const onChangeTaskStatusHandler = (isDone: boolean) => {
-      changeTaskStatus(task.id, isDone, todolist.id);
-    };
-    const removeTaskHandler = (id: string) => {
-      removeTask(id, todolist.id);
-    };
-    const onChangeTaskTitleHandler = (title: string) => {
-      changeTaskTitle(task.id, todolist.id, title);
-    };
     return (
       <Task
         {...task}

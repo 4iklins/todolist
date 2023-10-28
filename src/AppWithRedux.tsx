@@ -5,25 +5,18 @@ import { TodolistType, addTodolistAC } from './state/todolists-reducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { StateType } from './state/store';
 import TodolistWithRedux from './TodolistWithRedux';
-
+import { useCallback } from 'react';
 
 function AppWithRedux() {
   const todolists = useSelector<StateType, TodolistType[]>(state => state.todolists);
   const dispatch = useDispatch();
 
-  const addTodolist = (title: string) => {
-    dispatch(addTodolistAC(title));
-  };
-
-  const todolistComponents = todolists.map(todolist => {
-    return (
-      <Grid item key={todolist.id} xl={3} lg={4} md={6} xs={12}>
-        <Paper elevation={3} sx={{ p: 2 }}>
-          <TodolistWithRedux todolist={todolist} />
-        </Paper>
-      </Grid>
-    );
-  });
+  const addTodolist = useCallback(
+    (title: string) => {
+      dispatch(addTodolistAC(title));
+    },
+    [dispatch]
+  );
 
   return (
     <div className='App'>
@@ -47,7 +40,15 @@ function AppWithRedux() {
           </Grid>
         </Grid>
         <Grid container spacing={2}>
-          {todolistComponents}
+          {todolists.map(todolist => {
+            return (
+              <Grid item key={todolist.id} xl={3} lg={4} md={6} xs={12}>
+                <Paper elevation={3} sx={{ p: 2 }}>
+                  <TodolistWithRedux todolist={todolist} />
+                </Paper>
+              </Grid>
+            );
+          })}
         </Grid>
       </Container>
     </div>
