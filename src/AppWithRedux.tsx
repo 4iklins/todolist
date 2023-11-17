@@ -1,4 +1,4 @@
-import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import AddItemForm from './components/AddItemForm/AddItemForm';
 import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { TodolistType, addTodolistAC } from './state/todolists-reducer';

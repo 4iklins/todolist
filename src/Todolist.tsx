@@ -1,5 +1,5 @@
 import { FilterType, TaskType, TodolistType } from './App';
-import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import AddItemForm from './components/AddItemForm/AddItemForm';
 import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
 import { Box, Button, IconButton, List, Typography } from '@mui/material';

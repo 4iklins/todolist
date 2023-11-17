@@ -1,8 +1,8 @@
 import './App.css';
 import Todolist from './Todolist';
-import { Reducer, useReducer} from 'react';
+import { Reducer, useReducer } from 'react';
 import { v1 } from 'uuid';
-import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import AddItemForm from './components/AddItemForm/AddItemForm';
 import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import {

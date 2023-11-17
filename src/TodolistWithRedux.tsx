@@ -1,4 +1,4 @@
-import AddItemForm from './components/AddItemForm.tsx/AddItemForm';
+import AddItemForm from './components/AddItemForm/AddItemForm';
 import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
@@ -31,9 +31,12 @@ const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
     [id]
   );
 
-  const changeTodolistTitle = useCallback((title: string) => {
-    dispatch(changeTodolistTitleAC(id, title));
-  },[id]);
+  const changeTodolistTitle = useCallback(
+    (title: string) => {
+      dispatch(changeTodolistTitleAC(id, title));
+    },
+    [id]
+  );
 
   const changeTaskStatus = useCallback(
     (taskId: string, isDone: boolean) => {
@@ -56,25 +59,24 @@ const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
 
   const onAllClick = useCallback(() => {
     dispatch(changeTodolistFilterAC(id, 'all'));
-  },[id]);
+  }, [id]);
   const onActiveClick = useCallback(() => {
     dispatch(changeTodolistFilterAC(id, 'active'));
-  },[id]);
+  }, [id]);
   const onCompletedClick = useCallback(() => {
     dispatch(changeTodolistFilterAC(id, 'completed'));
-  },[id]);
+  }, [id]);
 
-
-  const tasksForRender = useMemo(()=>{
-    console.log('useMemo')
+  const tasksForRender = useMemo(() => {
+    console.log('useMemo');
     if (filter === 'active') {
       return tasks.filter(task => !task.isDone);
     }
     if (filter === 'completed') {
       return tasks.filter(task => task.isDone);
     }
-    return tasks
-  },[filter,tasks])
+    return tasks;
+  }, [filter, tasks]);
 
   //
   return (
