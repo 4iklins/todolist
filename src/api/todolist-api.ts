@@ -7,13 +7,13 @@ export const todolistApi = {
     return instance.get<TodolistType[]>(`/todo-lists`);
   },
   createTodo(title: string) {
-    return instance.post<ResponseType<TodolistType[]>>(`/todo-lists`, { title });
+    return instance.post<ResponseType<{ item: TodolistType }>>(`/todo-lists`, { title });
   },
   updateTodo(todolistId: string, title: string) {
-    return instance.put<ResponseType<{}>>(`/todo-lists/${todolistId}`, { title });
+    return instance.put<ResponseType>(`/todo-lists/${todolistId}`, { title });
   },
   deleteTodo(todolistId: string) {
-    return instance.delete<ResponseType<{}>>(`/todo-lists/${todolistId}`);
+    return instance.delete<ResponseType>(`/todo-lists/${todolistId}`);
   },
 };
 type TodolistType = {
@@ -23,7 +23,7 @@ type TodolistType = {
   order: number;
 };
 
-export type ResponseType<T> = {
+export type ResponseType<T = {}> = {
   resultCode: number;
   messages: string[];
   data: {
