@@ -1,6 +1,6 @@
 import { v1 } from 'uuid';
-import { AddTodoListAT, RemoveTodolistAT } from './todolists-reducer';
-import { initState } from './initstate';
+import { AddTodoListAT, RemoveTodolistAT, SetTodolistsAT } from './todolists-reducer';
+import { TaskType } from '../api/todolist-api';
 
 export type RemoveTaskActionType = {
   type: 'REMOVE-TASK';
@@ -27,20 +27,23 @@ export type ActionsTasksType =
   | ChangeTaskStatusActionType
   | ChangeTaskTitleActionType
   | AddTodoListAT
-  | RemoveTodolistAT;
+  | RemoveTodolistAT
+  | SetTodolistsAT;
 
 export interface TasksStateType {
   [key: string]: TaskType[];
 }
-export interface TaskType {
-  id: string;
-  title: string;
-  isDone: boolean;
-}
-const initialState:TasksStateType = initState.tasks;
 
-export const tasksReducer = (state = initialState, action: ActionsTasksType) => {
+const initialState: TasksStateType = {};
+
+export const tasksReducer = (state = initialState, action: ActionsTasksType):TasksStateType => {
   switch (action.type) {
+    case 'SET-TODOS':
+      const stateCopy = { ...state };
+      action.payload.todoLists.forEach(tl => {
+        stateCopy[tl.id] = [];
+      });
+      return stateCopy;
     case 'REMOVE-TASK':
       return {
         ...state,
@@ -51,7 +54,7 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType) => 
         ...state,
         [action.payload.todolistId]: [
           ...state[action.payload.todolistId],
-          { id: action.payload.id, title: action.payload.title, isDone: false },
+          { id: action.payload.id, title: action.payload.title, status: 0 },
         ],
       };
     case 'CHANGE-TASK-STATUS':
@@ -80,6 +83,8 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType) => 
       return state;
   }
 };
+
+export const setTasksAC = (tasks:task)
 
 export const removeTaskAC = (taskId: string, todolistId: string): RemoveTaskActionType => {
   return { type: 'REMOVE-TASK', payload: { taskId, todolistId } };

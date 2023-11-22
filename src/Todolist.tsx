@@ -1,100 +1,125 @@
-import { FilterType, TaskType, TodolistType } from './App';
 import AddItemForm from './components/AddItemForm/AddItemForm';
 import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
-import { Box, Button, IconButton, List, Typography } from '@mui/material';
+import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import { useDispatch, useSelector } from 'react-redux';
+import { StateType } from './state/store';
+import { TaskType, addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC } from './state/tasks-reducer';
+import {
+  TodolistDomainType,
+  changeTodolistFilterAC,
+  changeTodolistTitleAC,
+  removeTodolistAC,
+} from './state/todolists-reducer';
+import { memo, useCallback, useMemo } from 'react';
+import Button from './components/Button/Button';
 
 export interface TodoListProps {
-  todolist: TodolistType;
-  tasks: TaskType[];
-  removeTask: (id: string, todolistId: string) => void;
-  addTask: (title: string, todolistId: string) => void;
-  changeFilter: (filter: FilterType, id: string) => void;
-  changeTaskStatus: (taskId: string, isDone: boolean, todolistId: string) => void;
-  removeTodolist: (todolistId: string) => void;
-  changeTaskTitle: (tasksId: string, tododlistId: string, taskTitle: string) => void;
-  changeTodolistTitle: (id: string, title: string) => void;
+  todolist: TodolistDomainType;
 }
 
-const Todolist = ({
-  todolist,
-  tasks,
-  removeTask,
-  addTask,
-  changeFilter,
-  changeTaskStatus,
-  changeTaskTitle,
-  changeTodolistTitle,
-  removeTodolist,
-}: TodoListProps) => {
-  const addTaskHandler = (title: string) => {
-    addTask(title, todolist.id);
-  };
-  const changeTitle = (title: string) => {
-    changeTodolistTitle(todolist.id, title);
-  };
-  const onChangeTaskStatusHandler = (taskId: string, isDone: boolean) => {
-    changeTaskStatus(taskId, isDone, todolist.id);
-  };
-  const removeTaskHandler = (id: string) => {
-    removeTask(id, todolist.id);
-  };
-  const onChangeTaskTitleHandler = (taskId: string, title: string) => {
-    changeTaskTitle(taskId, todolist.id, title);
-  };
+const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
+  const { id, title, filter } = todolist;
+  const tasks = useSelector<StateType, TaskType[]>(state => state.tasks[id]);
+  const dispatch = useDispatch();
 
-  const tasksForRender = tasks.map(task => {
-    return (
-      <Task
-        {...task}
-        key={task.id}
-        onChangeStatus={onChangeTaskStatusHandler}
-        removeTask={removeTaskHandler}
-        changeTaskTitle={onChangeTaskTitleHandler}
-      />
-    );
-  });
+  const addTask = useCallback(
+    (title: string) => {
+      dispatch(addTaskAC(title, id));
+    },
+    [id]
+  );
+
+  const changeTodolistTitle = useCallback(
+    (title: string) => {
+      dispatch(changeTodolistTitleAC(id, title));
+    },
+    [id]
+  );
+
+  const changeTaskStatus = useCallback(
+    (taskId: string, isDone: boolean) => {
+      dispatch(changeTaskStatusAC(taskId, isDone, id));
+    },
+    [id]
+  );
+  const removeTask = useCallback(
+    (taskId: string) => {
+      dispatch(removeTaskAC(taskId, id));
+    },
+    [id]
+  );
+  const changeTaskTitle = useCallback(
+    (taskId: string, title: string) => {
+      dispatch(changeTaskTitleAC(taskId, id, title));
+    },
+    [id]
+  );
+
+  const onAllClick = useCallback(() => {
+    dispatch(changeTodolistFilterAC(id, 'all'));
+  }, [id]);
+  const onActiveClick = useCallback(() => {
+    dispatch(changeTodolistFilterAC(id, 'active'));
+  }, [id]);
+  const onCompletedClick = useCallback(() => {
+    dispatch(changeTodolistFilterAC(id, 'completed'));
+  }, [id]);
+
+  const tasksForRender = useMemo(() => {
+    console.log('useMemo');
+    if (filter === 'active') {
+      return tasks.filter(task => !task.isDone);
+    }
+    if (filter === 'completed') {
+      return tasks.filter(task => task.isDone);
+    }
+    return tasks;
+  }, [filter, tasks]);
+
+  //
   return (
     <div>
       <Typography variant='h6' component='h2' display={'flex'} mb={3}>
-        <EditableSpan title={todolist.title} changeTitle={changeTitle} />
+        <EditableSpan title={title} changeTitle={changeTodolistTitle} />
         <IconButton
-          onClick={() => removeTodolist(todolist.id)}
+          onClick={() => dispatch(removeTodolistAC(id))}
           color='primary'
           sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}>
           <DeleteForeverIcon fontSize='inherit' />
         </IconButton>
       </Typography>
 
-      <AddItemForm addItem={addTaskHandler} label='Task title' />
+      <AddItemForm addItem={addTask} label='Task title' />
 
       <List sx={{ maxHeight: '172px', minHeight: '172px', overflowY: 'auto', p: 0, m: '10px 0' }}>
-        {tasksForRender}
+        {tasksForRender.map(task => {
+          return (
+            <Task
+              {...task}
+              key={task.id}
+              onChangeStatus={changeTaskStatus}
+              removeTask={removeTask}
+              changeTaskTitle={changeTaskTitle}
+            />
+          );
+        })}
       </List>
 
       <Box sx={{ 'button + button': { ml: 1 } }}>
-        <Button
-          variant={todolist.filter === 'all' ? 'contained' : 'outlined'}
-          size='small'
-          onClick={() => changeFilter('all', todolist.id)}>
+        <Button variant={filter === 'all' ? 'contained' : 'outlined'} size='small' onClick={onAllClick}>
           All
         </Button>
-        <Button
-          variant={todolist.filter === 'active' ? 'contained' : 'outlined'}
-          size='small'
-          onClick={() => changeFilter('active', todolist.id)}>
+        <Button variant={filter === 'active' ? 'contained' : 'outlined'} size='small' onClick={onActiveClick}>
           Active
         </Button>
-        <Button
-          variant={todolist.filter === 'completed' ? 'contained' : 'outlined'}
-          size='small'
-          onClick={() => changeFilter('completed', todolist.id)}>
+        <Button variant={filter === 'completed' ? 'contained' : 'outlined'} size='small' onClick={onCompletedClick}>
           Completed
         </Button>
       </Box>
     </div>
   );
-};
+});
 
-export default Todolist;
+export default TodolistWithRedux;

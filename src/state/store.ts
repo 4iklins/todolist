@@ -1,7 +1,8 @@
 //
 import { tasksReducer } from './tasks-reducer';
 import { todolistsReducer } from './todolists-reducer';
-import { combineReducers, compose, legacy_createStore } from 'redux';
+import { combineReducers, compose, legacy_createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 declare global {
   interface Window {
@@ -16,7 +17,7 @@ const rootReducer = combineReducers({
 });
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 // непосредственно создаём store
-export const store = legacy_createStore(rootReducer, composeEnhancers());
+export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));
 // определить автоматически тип всего объекта состояния
 export type StateType = ReturnType<typeof rootReducer>;
 

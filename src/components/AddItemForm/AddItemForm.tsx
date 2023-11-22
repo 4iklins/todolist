@@ -46,7 +46,7 @@ const AddItemForm = memo((props: AddItemFormType) => {
           endAdornment: (
             <InputAdornment position='end'>
               <IconButton onClick={addItem} disabled={!title} color='primary' size='large' sx={{ p: 0 }}>
-                <AddBoxIcon fontSize='inherit' />!!!
+                <AddBoxIcon fontSize='inherit' />
               </IconButton>
             </InputAdornment>
           ),

@@ -28,14 +28,14 @@ export const todolistApi = {
     return instance.delete<ResponseType>(`/todo-lists/${todolistId}/tasks/${taskId}`);
   },
 };
-type TodolistType = {
+export type TodolistType = {
   id: string;
   title: string;
   addedDate: Date;
   order: number;
 };
 
-type TaskType = {
+export type TaskType = {
   description: string;
   title: string;
   completed: boolean;
