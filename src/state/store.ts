@@ -1,8 +1,9 @@
 //
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { tasksReducer } from './tasks-reducer';
 import { todolistsReducer } from './todolists-reducer';
-import { combineReducers, compose, legacy_createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
+import { combineReducers, compose, legacy_createStore, applyMiddleware, AnyAction } from 'redux';
+import thunk, { ThunkDispatch } from 'redux-thunk';
 
 declare global {
   interface Window {
@@ -20,6 +21,9 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));
 // определить автоматически тип всего объекта состояния
 export type StateType = ReturnType<typeof rootReducer>;
+export type AppDispatchType = ThunkDispatch<StateType, unknown, AnyAction>;
+export const useAppDispatch = useDispatch<AppDispatchType>;
+export const useAppSelector: TypedUseSelectorHook<StateType> = useSelector;
 
 // а это, чтобы можно было в консоли браузера обращаться к store в любой момент
 // @ts-ignore

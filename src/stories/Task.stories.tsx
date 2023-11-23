@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-
 import Task from '../components/Task/Task';
+import { TaskStatuses } from '../api/todolist-api';
 
 // More on how to set up stories at: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 const meta: Meta<typeof Task> = {
@@ -39,7 +39,7 @@ export const TaskDone: Story = {
   args: {
     id: '1',
     title: 'JS',
-    isDone: true,
+    status: TaskStatuses.Completed,
   },
 };
 
@@ -47,6 +47,6 @@ export const TaskNotDone: Story = {
   args: {
     id: '2',
     title: 'React',
-    isDone: false,
+    status: TaskStatuses.New,
   },
 };

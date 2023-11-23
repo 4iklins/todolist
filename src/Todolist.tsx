@@ -3,26 +3,30 @@ import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useDispatch, useSelector } from 'react-redux';
-import { StateType } from './state/store';
-import { TaskType, addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC } from './state/tasks-reducer';
+import { AppDispatchType, StateType, useAppDispatch, useAppSelector } from './state/store';
+import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, deleteTaskTC, fetchTasksTC } from './state/tasks-reducer';
 import {
   TodolistDomainType,
   changeTodolistFilterAC,
   changeTodolistTitleAC,
   removeTodolistAC,
 } from './state/todolists-reducer';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import Button from './components/Button/Button';
+import { TaskStatuses, TaskType } from './api/todolist-api';
 
 export interface TodoListProps {
   todolist: TodolistDomainType;
 }
 
-const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
+const Todolist = memo(({ todolist }: TodoListProps) => {
   const { id, title, filter } = todolist;
-  const tasks = useSelector<StateType, TaskType[]>(state => state.tasks[id]);
-  const dispatch = useDispatch();
+  const tasks: TaskType[] = useAppSelector(state => state.tasks[id]);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchTasksTC(id));
+  }, []);
 
   const addTask = useCallback(
     (title: string) => {
@@ -39,14 +43,14 @@ const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
   );
 
   const changeTaskStatus = useCallback(
-    (taskId: string, isDone: boolean) => {
-      dispatch(changeTaskStatusAC(taskId, isDone, id));
+    (taskId: string, status: TaskStatuses) => {
+      dispatch(changeTaskStatusAC(taskId, status, id));
     },
     [id]
   );
   const removeTask = useCallback(
     (taskId: string) => {
-      dispatch(removeTaskAC(taskId, id));
+      dispatch(deleteTaskTC(id, taskId));
     },
     [id]
   );
@@ -70,10 +74,10 @@ const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
   const tasksForRender = useMemo(() => {
     console.log('useMemo');
     if (filter === 'active') {
-      return tasks.filter(task => !task.isDone);
+      return tasks.filter(task => task.status !== TaskStatuses.Completed);
     }
     if (filter === 'completed') {
-      return tasks.filter(task => task.isDone);
+      return tasks.filter(task => task.status === TaskStatuses.Completed);
     }
     return tasks;
   }, [filter, tasks]);
@@ -122,4 +126,4 @@ const TodolistWithRedux = memo(({ todolist }: TodoListProps) => {
   );
 });
 
-export default TodolistWithRedux;
+export default Todolist;

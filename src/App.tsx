@@ -1,21 +1,18 @@
 import AddItemForm from './components/AddItemForm/AddItemForm';
 import { AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { TodolistDomainType, addTodolistAC, setTodolistsAC } from './state/todolists-reducer';
+import { TodolistDomainType, addTodolistAC, fetchTodolistsTC } from './state/todolists-reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { StateType } from './state/store';
+import { AppDispatchType, StateType, useAppDispatch, useAppSelector } from './state/store';
 import Todolist from './Todolist';
 import { useCallback, useEffect } from 'react';
-import { todolistApi } from './api/todolist-api';
 
-function AppWithRedux() {
-  const todolists = useSelector<StateType, TodolistDomainType[]>(state => state.todolists);
-  const dispatch = useDispatch();
+function App() {
+  const todolists: TodolistDomainType[] = useAppSelector(state => state.todolists);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    todolistApi.getTodos().then(res => {
-      dispatch(setTodolistsAC(res.data))
-    });
+    dispatch(fetchTodolistsTC());
   }, []);
 
   const addTodolist = useCallback(
@@ -62,4 +59,4 @@ function AppWithRedux() {
   );
 }
 
-export default AppWithRedux;
+export default App;

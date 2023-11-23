@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { v1 } from 'uuid';
 import {
   removeTodolistAC,
