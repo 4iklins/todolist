@@ -3,13 +3,13 @@ import EditableSpan from './components/EditableSpan/EditableSpan';
 import Task from './components/Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { AppDispatchType, StateType, useAppDispatch, useAppSelector } from './state/store';
-import { addTaskAC, changeTaskStatusAC, changeTaskTitleAC, deleteTaskTC, fetchTasksTC } from './state/tasks-reducer';
+import { useAppDispatch, useAppSelector } from './state/store';
+import { addTaskTC, deleteTaskTC, fetchTasksTC, updateTaskTC } from './state/tasks-reducer';
 import {
   TodolistDomainType,
   changeTodolistFilterAC,
-  changeTodolistTitleAC,
-  removeTodolistAC,
+  changeTodolistTitleTC,
+  deleteTodolistTC,
 } from './state/todolists-reducer';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import Button from './components/Button/Button';
@@ -30,21 +30,21 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
 
   const addTask = useCallback(
     (title: string) => {
-      dispatch(addTaskAC(title, id));
+      dispatch(addTaskTC(id, title));
     },
     [id]
   );
 
   const changeTodolistTitle = useCallback(
     (title: string) => {
-      dispatch(changeTodolistTitleAC(id, title));
+      dispatch(changeTodolistTitleTC(id, title));
     },
     [id]
   );
 
   const changeTaskStatus = useCallback(
     (taskId: string, status: TaskStatuses) => {
-      dispatch(changeTaskStatusAC(taskId, status, id));
+      dispatch(updateTaskTC(taskId, { status }, id));
     },
     [id]
   );
@@ -56,7 +56,7 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
   );
   const changeTaskTitle = useCallback(
     (taskId: string, title: string) => {
-      dispatch(changeTaskTitleAC(taskId, id, title));
+      dispatch(updateTaskTC(taskId, { title }, id));
     },
     [id]
   );
@@ -88,7 +88,7 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
       <Typography variant='h6' component='h2' display={'flex'} mb={3}>
         <EditableSpan title={title} changeTitle={changeTodolistTitle} />
         <IconButton
-          onClick={() => dispatch(removeTodolistAC(id))}
+          onClick={() => dispatch(deleteTodolistTC(id))}
           color='primary'
           sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}>
           <DeleteForeverIcon fontSize='inherit' />

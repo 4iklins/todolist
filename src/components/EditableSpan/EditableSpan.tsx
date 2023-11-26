@@ -15,7 +15,7 @@ const EditableSpan = memo(({ title, changeTitle }: EditableSpanPropsType) => {
   };
   const activeViewMode = () => {
     setEditmode(false);
-    changeTitle(text);
+    if (text !== title) changeTitle(text);
   };
 
   const onChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
