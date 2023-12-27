@@ -1,7 +1,9 @@
-import { AddTodoListAT, DeleteTodolistAT, SetTodolistsAT } from './todolists-reducer';
+import { AddTodoListAT, DeleteTodolistAT, SetTodolistsAT, changeTodolistEntityStatusAC } from './todolists-reducer';
 import { TaskPriorities, TaskStatuses, TaskType, TaskUpdateType, todolistApi } from '../api/todolist-api';
 import { StateType } from './store';
 import { Dispatch } from 'redux';
+import { RequestStatusType, setAppErrorAC, setAppStatusAC } from './app-reducer';
+import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
 
 export type ActionsTasksType =
   | ReturnType<typeof setTasksAC>
@@ -10,10 +12,12 @@ export type ActionsTasksType =
   | ReturnType<typeof updateTaskAC>
   | AddTodoListAT
   | DeleteTodolistAT
-  | SetTodolistsAT;
+  | SetTodolistsAT
+  | ReturnType<typeof changeTaskEntityStatusAC>;
 
+export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
 export interface TasksStateType {
-  [key: string]: TaskType[];
+  [key: string]: TaskDomainType[];
 }
 
 const initialState: TasksStateType = {};
@@ -37,7 +41,10 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
       });
       return stateCopy;
     case 'SET-TASKS':
-      return { ...state, [action.payload.todolistId]: action.payload.tasks };
+      return {
+        ...state,
+        [action.payload.todolistId]: action.payload.tasks.map(task => ({ ...task, entityStatus: 'idle' })),
+      };
     case 'DELETE-TASK':
       return {
         ...state,
@@ -46,13 +53,16 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
     case 'ADD-TASK':
       return {
         ...state,
-        [action.payload.task.todoListId]: [...state[action.payload.task.todoListId], action.payload.task],
+        [action.payload.task.todoListId]: [
+          ...state[action.payload.task.todoListId],
+          { ...action.payload.task, entityStatus: 'idle' },
+        ],
       };
     case 'UPDATE-TASK':
       return {
         ...state,
         [action.payload.todolistId]: state[action.payload.todolistId].map(task =>
-          task.id === action.payload.taskId ? { ...action.payload.task } : task
+          task.id === action.payload.taskId ? { ...action.payload.task, entityStatus: 'succeeded' } : task
         ),
       };
     case 'ADD-TODOLIST':
@@ -63,15 +73,38 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
         ...rest
       } = state;
       return rest;
+    case 'CHANGE-TASK-ENTITY-STATUS':
+      return {
+        ...state,
+        [action.payload.todolistId]: state[action.payload.todolistId].map(task =>
+          task.id === action.payload.taskId ? { ...task, entityStatus: action.payload.status } : task
+        ),
+      };
     default:
       return state;
   }
 };
 
 export const fetchTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
-  todolistApi.getTasks(todolistId).then(res => {
-    dispatch(setTasksAC(res.data.items, todolistId));
-  });
+  dispatch(setAppStatusAC('loading'));
+  todolistApi
+    .getTasks(todolistId)
+    .then(res => {
+      if (!res.data.error) {
+        dispatch(setTasksAC(res.data.items, todolistId));
+        dispatch(setAppStatusAC('succeeded'));
+      } else {
+        if (res.data.error) {
+          dispatch(setAppErrorAC(res.data.error));
+        } else {
+          dispatch(setAppErrorAC('Some error occurred'));
+        }
+        dispatch(setAppStatusAC('failed'));
+      }
+    })
+    .catch(e => {
+      handleServerNetworkError(e, dispatch);
+    });
 };
 
 export const setTasksAC = (tasks: TaskType[], todolistId: string) => {
@@ -79,18 +112,44 @@ export const setTasksAC = (tasks: TaskType[], todolistId: string) => {
 };
 
 export const deleteTaskTC = (todolistId: string, taskId: string) => (dispatch: Dispatch) => {
-  todolistApi.deleteTask(todolistId, taskId).then(() => {
-    dispatch(deleteTaskAC(taskId, todolistId));
-  });
+  dispatch(setAppStatusAC('loading'));
+  dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'loading'));
+  todolistApi
+    .deleteTask(todolistId, taskId)
+    .then(res => {
+      if (res.data.resultCode === 0) {
+        dispatch(deleteTaskAC(taskId, todolistId));
+        dispatch(setAppStatusAC('succeeded'));
+      } else {
+        handleServerAppError(res.data, dispatch);
+        dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+      }
+    })
+    .catch(e => {
+      handleServerNetworkError(e, dispatch);
+      dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+    });
 };
 export const deleteTaskAC = (taskId: string, todolistId: string) => {
   return { type: 'DELETE-TASK', payload: { taskId, todolistId } } as const;
 };
 
 export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispatch) => {
-  todolistApi.createTask(todolistId, title).then(res => {
-    dispatch(addTaskAC(res.data.data.item));
-  });
+  dispatch(setAppStatusAC('loading'));
+  dispatch(changeTodolistEntityStatusAC(todolistId, 'loading'));
+  todolistApi
+    .createTask(todolistId, title)
+    .then(res => {
+      if (res.data.resultCode === 0) {
+        dispatch(addTaskAC(res.data.data.item));
+        dispatch(setAppStatusAC('succeeded'));
+      } else {
+        handleServerAppError(res.data, dispatch);
+      }
+    })
+    .catch(e => {
+      handleServerNetworkError(e, dispatch);
+    });
 };
 export const addTaskAC = (task: TaskType) => {
   return { type: 'ADD-TASK', payload: { task } } as const;
@@ -110,13 +169,30 @@ export const updateTaskTC =
         status: task.status,
         ...model,
       };
-
-      todolistApi.updateTask(todolistId, taskId, taskModel).then(res => {
-        dispatch(updateTaskAC(taskId, res.data.data.item, todolistId));
-      });
+      dispatch(setAppStatusAC('loading'));
+      dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'loading'));
+      todolistApi
+        .updateTask(todolistId, taskId, taskModel)
+        .then(res => {
+          if (res.data.resultCode === 0) {
+            dispatch(updateTaskAC(taskId, res.data.data.item, todolistId));
+            dispatch(setAppStatusAC('succeeded'));
+          } else {
+            handleServerAppError(res.data, dispatch);
+            dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+          }
+        })
+        .catch(e => {
+          handleServerNetworkError(e, dispatch);
+          dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+        });
     }
   };
 
 export const updateTaskAC = (taskId: string, task: TaskType, todolistId: string) => {
   return { type: 'UPDATE-TASK', payload: { taskId, task, todolistId } } as const;
+};
+
+export const changeTaskEntityStatusAC = (todolistId: string, taskId: string, status: RequestStatusType) => {
+  return { type: 'CHANGE-TASK-ENTITY-STATUS', payload: { todolistId, taskId, status } } as const;
 };

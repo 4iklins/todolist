@@ -4,13 +4,14 @@ import { ChangeEvent, memo, useState } from 'react';
 interface EditableSpanPropsType {
   title: string;
   changeTitle: (title: string) => void;
+  disabled: boolean;
 }
 
-const EditableSpan = memo(({ title, changeTitle }: EditableSpanPropsType) => {
+const EditableSpan = memo(({ title, disabled, changeTitle }: EditableSpanPropsType) => {
   const [editmode, setEditmode] = useState<boolean>(false);
   const [text, setText] = useState<string>('');
   const activeEditMode = () => {
-    setEditmode(true);
+    if (!disabled) setEditmode(true);
     setText(title);
   };
   const activeViewMode = () => {

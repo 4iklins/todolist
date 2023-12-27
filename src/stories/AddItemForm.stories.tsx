@@ -85,5 +85,7 @@ export const AddItemFormStory: Story = {
   },
 };
 export const AddItemFormError: Story = {
-  render: () => <ErrorAddItemForm label='Todolist title' addItem={action('Button clicked inside form')} />,
+  render: () => (
+    <ErrorAddItemForm label='Todolist title' addItem={action('Button clicked inside form')} disabled={false} />
+  ),
 };

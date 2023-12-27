@@ -6,6 +6,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 export interface AddItemFormType {
   label: string;
   addItem: (title: string) => void;
+  disabled: boolean;
 }
 
 const AddItemForm = memo((props: AddItemFormType) => {
@@ -30,10 +31,11 @@ const AddItemForm = memo((props: AddItemFormType) => {
       setTitle('');
     }
   };
-  
+
   return (
     <Grid container>
       <TextField
+        disabled={props.disabled}
         value={title}
         label={props.label}
         onChange={onInputChangeHandler}
@@ -45,7 +47,12 @@ const AddItemForm = memo((props: AddItemFormType) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position='end'>
-              <IconButton onClick={addItem} disabled={!title} color='primary' size='large' sx={{ p: 0 }}>
+              <IconButton
+                onClick={addItem}
+                disabled={!title || props.disabled}
+                color='primary'
+                size='large'
+                sx={{ p: 0 }}>
                 <AddBoxIcon fontSize='inherit' />
               </IconButton>
             </InputAdornment>

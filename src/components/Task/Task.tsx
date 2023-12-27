@@ -2,15 +2,16 @@ import ClearIcon from '@mui/icons-material/Clear';
 import EditableSpan from '../EditableSpan/EditableSpan';
 import { Checkbox, IconButton, ListItem } from '@mui/material';
 import { ChangeEvent, memo } from 'react';
-import { TaskStatuses, TaskType } from '../../api/todolist-api';
+import { TaskStatuses } from '../../api/todolist-api';
+import { TaskDomainType } from '../../state/tasks-reducer';
 
-interface TaskProps extends TaskType {
+interface TaskProps extends TaskDomainType {
   onChangeStatus: (taskId: string, status: TaskStatuses) => void;
   removeTask: (taskId: string) => void;
   changeTaskTitle: (taskId: string, title: string) => void;
 }
 
-const Task = memo(({ id, title, status, onChangeStatus, removeTask, changeTaskTitle }: TaskProps) => {
+const Task = memo(({ id, title, status, entityStatus, onChangeStatus, removeTask, changeTaskTitle }: TaskProps) => {
   const changeStatus = (e: ChangeEvent<HTMLInputElement>) => {
     onChangeStatus(id, e.currentTarget.checked ? TaskStatuses.Completed : TaskStatuses.New);
   };
@@ -21,11 +22,16 @@ const Task = memo(({ id, title, status, onChangeStatus, removeTask, changeTaskTi
 
   return (
     <ListItem sx={{ p: 0, '& button': { ml: 'auto' } }} divider>
-      <Checkbox checked={status === TaskStatuses.Completed} onChange={changeStatus} sx={{ pl: 0 }} />
+      <Checkbox
+        checked={status === TaskStatuses.Completed}
+        onChange={changeStatus}
+        sx={{ pl: 0 }}
+        disabled={entityStatus === 'loading'}
+      />
 
-      <EditableSpan title={title} changeTitle={changeTitle} />
+      <EditableSpan title={title} changeTitle={changeTitle} disabled={entityStatus === 'loading'} />
 
-      <IconButton onClick={() => removeTask(id)} size='small' color='primary'>
+      <IconButton onClick={() => removeTask(id)} size='small' color='primary' disabled={entityStatus === 'loading'}>
         <ClearIcon fontSize='inherit' />
       </IconButton>
     </ListItem>

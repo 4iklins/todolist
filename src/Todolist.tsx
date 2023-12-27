@@ -4,7 +4,7 @@ import Task from './components/Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAppDispatch, useAppSelector } from './state/store';
-import { addTaskTC, deleteTaskTC, fetchTasksTC, updateTaskTC } from './state/tasks-reducer';
+import { TaskDomainType, addTaskTC, deleteTaskTC, fetchTasksTC, updateTaskTC } from './state/tasks-reducer';
 import {
   TodolistDomainType,
   changeTodolistFilterAC,
@@ -13,15 +13,15 @@ import {
 } from './state/todolists-reducer';
 import { memo, useCallback, useEffect, useMemo } from 'react';
 import Button from './components/Button/Button';
-import { TaskStatuses, TaskType } from './api/todolist-api';
+import { TaskStatuses } from './api/todolist-api';
 
 export interface TodoListProps {
   todolist: TodolistDomainType;
 }
 
 const Todolist = memo(({ todolist }: TodoListProps) => {
-  const { id, title, filter } = todolist;
-  const tasks: TaskType[] = useAppSelector(state => state.tasks[id]);
+  const { id, title, filter, entityStatus } = todolist;
+  const tasks = useAppSelector<TaskDomainType[]>(state => state.tasks[id]);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -86,16 +86,17 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
   return (
     <div>
       <Typography variant='h6' component='h2' display={'flex'} mb={3}>
-        <EditableSpan title={title} changeTitle={changeTodolistTitle} />
+        <EditableSpan title={title} changeTitle={changeTodolistTitle} disabled={entityStatus === 'loading'} />
         <IconButton
           onClick={() => dispatch(deleteTodolistTC(id))}
           color='primary'
-          sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}>
+          sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}
+          disabled={entityStatus === 'loading'}>
           <DeleteForeverIcon fontSize='inherit' />
         </IconButton>
       </Typography>
 
-      <AddItemForm addItem={addTask} label='Task title' />
+      <AddItemForm addItem={addTask} label='Task title' disabled={entityStatus === 'loading'} />
 
       <List sx={{ maxHeight: '172px', minHeight: '172px', overflowY: 'auto', p: 0, m: '10px 0' }}>
         {tasksForRender.map(task => {
