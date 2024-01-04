@@ -1,4 +1,10 @@
-import { AddTodoListAT, DeleteTodolistAT, SetTodolistsAT, changeTodolistEntityStatusAC } from './todolists-reducer';
+import {
+  AddTodoListAT,
+  ClearTodolistsAT,
+  DeleteTodolistAT,
+  SetTodolistsAT,
+  changeTodolistEntityStatusAC,
+} from './todolists-reducer';
 import { TaskPriorities, TaskStatuses, TaskType, TaskUpdateType, todolistApi } from '../api/todolist-api';
 import { StateType } from './store';
 import { Dispatch } from 'redux';
@@ -13,7 +19,8 @@ export type ActionsTasksType =
   | AddTodoListAT
   | DeleteTodolistAT
   | SetTodolistsAT
-  | ReturnType<typeof changeTaskEntityStatusAC>;
+  | ReturnType<typeof changeTaskEntityStatusAC>
+  | ClearTodolistsAT;
 
 export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
 export interface TasksStateType {
@@ -80,6 +87,8 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
           task.id === action.payload.taskId ? { ...task, entityStatus: action.payload.status } : task
         ),
       };
+      case 'CLEAR-TODOS':
+        return {}
     default:
       return state;
   }

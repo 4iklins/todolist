@@ -4,14 +4,14 @@ import Task from '../Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import { TaskDomainType, addTaskTC, deleteTaskTC, fetchTasksTC, updateTaskTC } from '../../state/tasks-reducer';
+import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../../state/tasks-reducer';
 import {
   TodolistDomainType,
   changeTodolistFilterAC,
   changeTodolistTitleTC,
   deleteTodolistTC,
 } from '../../state/todolists-reducer';
-import { memo, useCallback, useEffect, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import Button from '../Button/Button';
 import { TaskStatuses } from '../../api/todolist-api';
 
@@ -23,10 +23,6 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
   const { id, title, filter, entityStatus } = todolist;
   const tasks = useAppSelector<TaskDomainType[]>(state => state.tasks[id]);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(fetchTasksTC(id));
-  }, []);
 
   const addTask = useCallback(
     (title: string) => {

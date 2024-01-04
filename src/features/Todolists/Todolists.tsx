@@ -1,15 +1,22 @@
 import { Grid, Paper } from '@mui/material';
 import Todolist from '../../components/Todolist/Todolist';
-import { TodolistDomainType, addTodolistTC } from '../../state/todolists-reducer';
+import { TodolistDomainType, addTodolistTC, fetchTodolistsTC } from '../../state/todolists-reducer';
 import AddItemForm from '../../components/AddItemForm/AddItemForm';
 import { useAppDispatch, useAppSelector } from '../../state/store';
 import { RequestStatusType } from '../../state/app-reducer';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { Navigate } from 'react-router-dom';
 
 const Todolists = () => {
   const status: RequestStatusType = useAppSelector(state => state.app.status);
   const todolists: TodolistDomainType[] = useAppSelector(state => state.todolists);
+  const isLoggedIn = useAppSelector<boolean>(state => state.auth.isLoggedIn);
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (isLoggedIn) {
+      dispatch(fetchTodolistsTC());
+    }
+  }, []);
 
   const addTodolist = useCallback(
     (title: string) => {
@@ -17,6 +24,10 @@ const Todolists = () => {
     },
     [dispatch]
   );
+  if (!isLoggedIn) {
+    return <Navigate to={'/login'} />;
+  }
+
   return (
     <>
       <Grid container sx={{ p: '24px 0' }}>

@@ -9,27 +9,27 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useFormik } from 'formik';
 import { Link } from '@mui/material';
-
-type FormDataType = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
+import { LoginParamsType } from '../../api/auth-api';
+import { useAppDispatch, useAppSelector } from '../../state/store';
+import { loginTC } from '../../state/auth-reducer';
+import { Navigate } from 'react-router-dom';
 
 const EMAIL_REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 export const Login = () => {
-  const { values, handleSubmit, handleChange, errors, touched, getFieldProps, resetForm } = useFormik<FormDataType>({
+  const isLoggedIn = useAppSelector<boolean>(state => state.auth.isLoggedIn);
+  const dispatch = useAppDispatch();
+  const { values, handleSubmit, handleChange, errors, touched, getFieldProps, resetForm } = useFormik<LoginParamsType>({
     initialValues: {
       email: '',
       password: '',
       rememberMe: false,
     },
     onSubmit: values => {
-      alert(JSON.stringify(values));
+      dispatch(loginTC(values));
       resetForm();
     },
     validate: values => {
-      const errors: Partial<FormDataType> = {};
+      const errors: Partial<LoginParamsType> = {};
       if (!values.email) {
         errors.email = 'Required';
       } else if (!EMAIL_REGEXP.test(values.email)) {
@@ -43,6 +43,10 @@ export const Login = () => {
       return errors;
     },
   });
+  if (isLoggedIn) {
+    return <Navigate to={'/'} />;
+  }
+
   return (
     <Grid container justifyContent={'center'}>
       <Grid item justifyContent={'center'}>

@@ -1,23 +1,45 @@
-import AddItemForm from './components/AddItemForm/AddItemForm';
-import { AppBar, Button, Container, Grid, IconButton, LinearProgress, Paper, Toolbar, Typography } from '@mui/material';
+import {
+  AppBar,
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  IconButton,
+  LinearProgress,
+  Paper,
+  Toolbar,
+  Typography,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { TodolistDomainType, addTodolistTC, fetchTodolistsTC } from './state/todolists-reducer';
 import { useAppDispatch, useAppSelector } from './state/store';
-import { useCallback, useEffect } from 'react';
-import { RequestStatusType } from './state/app-reducer';
+import { RequestStatusType, initializeAppTC } from './state/app-reducer';
 import { ErrorSnackBar } from './components/ErrorSnackBar/ErrorSnackBar';
 import Todolists from './features/Todolists/Todolists';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Login } from './features/Login/Login';
+import { useEffect } from 'react';
+import { logoutTC } from './state/auth-reducer';
 
 function App() {
   const status: RequestStatusType = useAppSelector(state => state.app.status);
+  const isInitialized = useAppSelector<boolean>(state => state.app.isInitialized);
+  const isLoggedIn = useAppSelector<boolean>(state => state.auth.isLoggedIn);
   const dispatch = useAppDispatch();
 
+  const logout = () => {
+    dispatch(logoutTC());
+  };
   useEffect(() => {
-    dispatch(fetchTodolistsTC());
+    dispatch(initializeAppTC());
   }, []);
 
+  if (!isInitialized) {
+    return (
+      <div style={{ position: 'fixed', top: '30%', textAlign: 'center', width: '100%' }}>
+        <CircularProgress />
+      </div>
+    );
+  }
   return (
     <div className='App'>
       <ErrorSnackBar />
@@ -29,9 +51,11 @@ function App() {
           <Typography variant='h6' component='h1'>
             Todolist
           </Typography>
-          <Button color='inherit' sx={{ ml: 'auto' }}>
-            Login
-          </Button>
+          {isLoggedIn && (
+            <Button color='inherit' sx={{ ml: 'auto' }} onClick={logout}>
+              Logout
+            </Button>
+          )}
         </Toolbar>
         {status === 'loading' && <LinearProgress color='secondary' />}
       </AppBar>
