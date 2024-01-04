@@ -23,7 +23,7 @@ export const setIsLoggedInAC = (value: boolean) => ({ type: 'login/SET-IS-LOGGED
 // thunks
 export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
   dispatch(setAppStatusAC('loading'));
-  authApi
+  return authApi
     .login(data)
     .then(res => {
       if (res.data.resultCode === 0) {
@@ -31,6 +31,7 @@ export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
         dispatch(setAppStatusAC('succeeded'));
       } else {
         handleServerAppError(res.data, dispatch);
+        return res.data;
       }
     })
     .catch(e => {

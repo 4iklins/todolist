@@ -18,31 +18,35 @@ const EMAIL_REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 export const Login = () => {
   const isLoggedIn = useAppSelector<boolean>(state => state.auth.isLoggedIn);
   const dispatch = useAppDispatch();
-  const { values, handleSubmit, handleChange, errors, touched, getFieldProps, resetForm } = useFormik<LoginParamsType>({
-    initialValues: {
-      email: '',
-      password: '',
-      rememberMe: false,
-    },
-    onSubmit: values => {
-      dispatch(loginTC(values));
-      resetForm();
-    },
-    validate: values => {
-      const errors: Partial<LoginParamsType> = {};
-      if (!values.email) {
-        errors.email = 'Required';
-      } else if (!EMAIL_REGEXP.test(values.email)) {
-        errors.email = 'Invalid email address';
-      }
-      if (!values.password) {
-        errors.password = 'Required';
-      } else if (values.password.length <= 3) {
-        errors.password = 'Password must be more than 3 characters';
-      }
-      return errors;
-    },
-  });
+  const { values, handleSubmit, handleChange, errors, touched, getFieldProps, resetForm, isSubmitting } =
+    useFormik<LoginParamsType>({
+      initialValues: {
+        email: '',
+        password: '',
+        rememberMe: false,
+      },
+      onSubmit: async values => {
+        await dispatch(loginTC(values)).then(data => {
+          if (data?.resultCode === 0) {
+            resetForm();
+          }
+        });
+      },
+      validate: values => {
+        const errors: Partial<LoginParamsType> = {};
+        if (!values.email) {
+          errors.email = 'Required';
+        } else if (!EMAIL_REGEXP.test(values.email)) {
+          errors.email = 'Invalid email address';
+        }
+        if (!values.password) {
+          errors.password = 'Required';
+        } else if (values.password.length <= 3) {
+          errors.password = 'Password must be more than 3 characters';
+        }
+        return errors;
+      },
+    });
   if (isLoggedIn) {
     return <Navigate to={'/'} />;
   }
@@ -90,7 +94,12 @@ export const Login = () => {
                 label={'Remember me'}
                 control={<Checkbox name='rememberMe' checked={values.rememberMe} onChange={handleChange} />}
               />
-              <Button type={'submit'} variant={'contained'} color={'primary'} sx={{ margin: '24px 0' }}>
+              <Button
+                type={'submit'}
+                variant={'contained'}
+                color={'primary'}
+                sx={{ margin: '24px 0' }}
+                disabled={isSubmitting}>
                 Login
               </Button>
             </FormGroup>
