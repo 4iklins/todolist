@@ -141,13 +141,16 @@ export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispa
     .then(res => {
       if (res.data.resultCode === 0) {
         dispatch(addTaskAC(res.data.data.item));
+        dispatch(changeTodolistEntityStatusAC(todolistId, 'succeeded'));
         dispatch(setAppStatusAC('succeeded'));
       } else {
         handleServerAppError(res.data, dispatch);
+        dispatch(changeTodolistEntityStatusAC(todolistId, 'failed'));
       }
     })
     .catch(e => {
       handleServerNetworkError(e, dispatch);
+      dispatch(changeTodolistEntityStatusAC(todolistId, 'failed'));
     });
 };
 export const addTaskAC = (task: TaskType) => {

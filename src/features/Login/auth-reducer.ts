@@ -3,22 +3,24 @@ import { setAppStatusAC } from '../../app/app-reducer';
 import { LoginParamsType, authApi } from '../../api/auth-api';
 import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
 import { clearTodolistsAC } from '../Todolists/todolists-reducer';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   isLoggedIn: false,
 };
-type InitialStateType = typeof initialState;
 
-export const authReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
-  switch (action.type) {
-    case 'login/SET-IS-LOGGED-IN':
-      return { ...state, isLoggedIn: action.value };
-    default:
-      return state;
-  }
-};
-// actions
-export const setIsLoggedInAC = (value: boolean) => ({ type: 'login/SET-IS-LOGGED-IN', value } as const);
+const slice = createSlice({
+  name: 'auth',
+  initialState,
+  reducers: {
+    setIsLoggedIn: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
+      state.isLoggedIn = action.payload.isLoggedIn;
+    },
+  },
+});
+
+export const authReducer = slice.reducer;
+export const authActions = slice.actions;
 
 // thunks
 export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
@@ -27,7 +29,7 @@ export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
     .login(data)
     .then(res => {
       if (res.data.resultCode === 0) {
-        dispatch(setIsLoggedInAC(true));
+        dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }));
         dispatch(setAppStatusAC('succeeded'));
       } else {
         handleServerAppError(res.data, dispatch);
@@ -45,7 +47,7 @@ export const logoutTC = () => (dispatch: Dispatch) => {
     .logout()
     .then(res => {
       if (res.data.resultCode === 0) {
-        dispatch(setIsLoggedInAC(false));
+        dispatch(authActions.setIsLoggedIn({ isLoggedIn: false }));
         dispatch(setAppStatusAC('succeeded'));
         dispatch(clearTodolistsAC());
       } else {
@@ -56,6 +58,3 @@ export const logoutTC = () => (dispatch: Dispatch) => {
       handleServerNetworkError(error, dispatch);
     });
 };
-
-// types
-type ActionsType = ReturnType<typeof setIsLoggedInAC>;

@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { authApi } from '../api/auth-api';
 import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
-import { setIsLoggedInAC } from '../features/Login/auth-reducer';
+import { authActions } from '../features/Login/auth-reducer';
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed';
 
@@ -43,7 +43,7 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
     .me()
     .then(res => {
       if (res.data.resultCode === 0) {
-        dispatch(setIsLoggedInAC(true));
+        dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }));
       } else {
         handleServerAppError(res.data, dispatch);
       }

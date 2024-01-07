@@ -19,8 +19,10 @@ const rootReducer = combineReducers({
 // непосредственно создаём store
 export const store = configureStore({ reducer: rootReducer });
 // определить автоматически тип всего объекта состояния
-export type StateType = ReturnType<typeof rootReducer>;
+export type StateType = ReturnType<typeof store.getState>;
 export type AppDispatchType = ThunkDispatch<StateType, unknown, UnknownAction>;
+
+
 export const useAppDispatch = useDispatch<AppDispatchType>;
 export const useAppSelector: TypedUseSelectorHook<StateType> = useSelector;
 
