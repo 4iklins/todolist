@@ -1,4 +1,5 @@
-import { ResponseType, instance } from './todolist-api';
+import { ResponseType } from './todolist-api';
+import { instance } from './instance';
 
 export type LoginParamsType = {
   email: string;

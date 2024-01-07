@@ -1,8 +1,8 @@
-import { AppDispatchType } from './store';
-import { TodolistType, todolistApi } from '../api/todolist-api';
+import { AppDispatchType } from '../../app/store';
+import { TodolistType, todolistApi } from '../../api/todolist-api';
 import { Dispatch } from 'redux';
-import { RequestStatusType, setAppStatusAC } from './app-reducer';
-import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
+import { RequestStatusType, setAppStatusAC } from '../../app/app-reducer';
+import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
 import { fetchTasksTC } from './tasks-reducer';
 
 export type DeleteTodolistAT = ReturnType<typeof deleteTodolistAC>;

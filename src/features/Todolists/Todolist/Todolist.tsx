@@ -1,19 +1,19 @@
-import AddItemForm from '../AddItemForm/AddItemForm';
-import EditableSpan from '../EditableSpan/EditableSpan';
-import Task from '../Task/Task';
+import AddItemForm from '../../../components/AddItemForm/AddItemForm';
+import EditableSpan from '../../../components/EditableSpan/EditableSpan';
+import Task from './Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useAppDispatch, useAppSelector } from '../../state/store';
-import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../../state/tasks-reducer';
+import { useAppDispatch, useAppSelector } from '../../../app/store';
+import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../tasks-reducer';
 import {
   TodolistDomainType,
   changeTodolistFilterAC,
   changeTodolistTitleTC,
   deleteTodolistTC,
-} from '../../state/todolists-reducer';
-import { memo, useCallback, useMemo } from 'react';
-import Button from '../Button/Button';
-import { TaskStatuses } from '../../api/todolist-api';
+} from '../todolists-reducer';
+import React, { memo, useCallback, useMemo } from 'react';
+import Button from '../../../components/Button/Button';
+import { TaskStatuses } from '../../../api/todolist-api';
 
 export interface TodoListProps {
   todolist: TodolistDomainType;

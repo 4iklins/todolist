@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
-import { setAppStatusAC } from './app-reducer';
-import { LoginParamsType, authApi } from '../api/auth-api';
-import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
-import { clearTodolistsAC } from './todolists-reducer';
+import { setAppStatusAC } from '../../app/app-reducer';
+import { LoginParamsType, authApi } from '../../api/auth-api';
+import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
+import { clearTodolistsAC } from '../Todolists/todolists-reducer';
 
 const initialState = {
   isLoggedIn: false,

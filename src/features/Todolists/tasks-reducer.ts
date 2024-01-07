@@ -5,11 +5,11 @@ import {
   SetTodolistsAT,
   changeTodolistEntityStatusAC,
 } from './todolists-reducer';
-import { TaskPriorities, TaskStatuses, TaskType, TaskUpdateType, todolistApi } from '../api/todolist-api';
-import { StateType } from './store';
+import { TaskPriorities, TaskStatuses, TaskType, TaskUpdateType, todolistApi } from '../../api/todolist-api';
+import { StateType } from '../../app/store';
 import { Dispatch } from 'redux';
-import { RequestStatusType, setAppErrorAC, setAppStatusAC } from './app-reducer';
-import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
+import { RequestStatusType, setAppErrorAC, setAppStatusAC } from '../../app/app-reducer';
+import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
 
 export type ActionsTasksType =
   | ReturnType<typeof setTasksAC>
@@ -23,21 +23,11 @@ export type ActionsTasksType =
   | ClearTodolistsAT;
 
 export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
-export interface TasksStateType {
+export type TasksStateType = {
   [key: string]: TaskDomainType[];
-}
+};
 
 const initialState: TasksStateType = {};
-
-export type UpdateModel = {
-  title?: string;
-  description?: string;
-  completed?: boolean;
-  status?: TaskStatuses;
-  priority?: TaskPriorities;
-  startDate?: Date;
-  deadline?: Date;
-};
 
 export const tasksReducer = (state = initialState, action: ActionsTasksType): TasksStateType => {
   switch (action.type) {
@@ -61,15 +51,15 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
       return {
         ...state,
         [action.payload.task.todoListId]: [
-          ...state[action.payload.task.todoListId],
           { ...action.payload.task, entityStatus: 'idle' },
+          ...state[action.payload.task.todoListId],
         ],
       };
     case 'UPDATE-TASK':
       return {
         ...state,
         [action.payload.todolistId]: state[action.payload.todolistId].map(task =>
-          task.id === action.payload.taskId ? { ...action.payload.task, entityStatus: 'succeeded' } : task
+          task.id === action.payload.taskId ? { ...task, ...action.payload.task, entityStatus: 'succeeded' } : task
         ),
       };
     case 'ADD-TODOLIST':
@@ -87,8 +77,8 @@ export const tasksReducer = (state = initialState, action: ActionsTasksType): Ta
           task.id === action.payload.taskId ? { ...task, entityStatus: action.payload.status } : task
         ),
       };
-      case 'CLEAR-TODOS':
-        return {}
+    case 'CLEAR-TODOS':
+      return {};
     default:
       return state;
   }
@@ -165,7 +155,8 @@ export const addTaskAC = (task: TaskType) => {
 };
 
 export const updateTaskTC =
-  (taskId: string, model: UpdateModel, todolistId: string) => (dispatch: Dispatch, getState: () => StateType) => {
+  (taskId: string, model: Partial<TaskUpdateType>, todolistId: string) =>
+  (dispatch: Dispatch, getState: () => StateType) => {
     const task = getState().tasks[todolistId].find(t => t.id === taskId);
     if (task) {
       const taskModel: TaskUpdateType = {
@@ -198,7 +189,7 @@ export const updateTaskTC =
     }
   };
 
-export const updateTaskAC = (taskId: string, task: TaskType, todolistId: string) => {
+export const updateTaskAC = (taskId: string, task: Partial<TaskType>, todolistId: string) => {
   return { type: 'UPDATE-TASK', payload: { taskId, task, todolistId } } as const;
 };
 

@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { authApi } from '../api/auth-api';
 import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
-import { setIsLoggedInAC } from './auth-reducer';
+import { setIsLoggedInAC } from '../features/Login/auth-reducer';
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed';
 
@@ -11,7 +11,7 @@ const initialState = {
   isInitialized: false,
 };
 
-type InitialStateType = typeof initialState;
+export type InitialStateType = typeof initialState;
 
 export const appReducer = (state: InitialStateType = initialState, action: ActionsType): InitialStateType => {
   switch (action.type) {

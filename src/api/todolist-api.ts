@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-export const instance = axios.create({ withCredentials: true, baseURL: 'https://social-network.samuraijs.com/api/1.1' });
+import { instance } from './instance';
 
 export const todolistApi = {
   getTodos() {
@@ -31,7 +29,7 @@ export const todolistApi = {
 export type TodolistType = {
   id: string;
   title: string;
-  addedDate: Date;
+  addedDate: string;
   order: number;
 };
 
@@ -41,12 +39,12 @@ export type TaskType = {
   completed: boolean;
   status: TaskStatuses;
   priority: TaskPriorities;
-  startDate: Date;
-  deadline: Date;
+  startDate: string;
+  deadline: string;
   id: string;
   todoListId: string;
   order: number;
-  addedDate: Date;
+  addedDate: string;
 };
 
 export type TaskUpdateType = {
@@ -55,8 +53,8 @@ export type TaskUpdateType = {
   completed: boolean;
   status: TaskStatuses;
   priority: TaskPriorities;
-  startDate: Date;
-  deadline: Date;
+  startDate: string;
+  deadline: string;
 };
 
 export type ResponseType<T = {}> = {

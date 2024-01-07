@@ -1,17 +1,13 @@
 //
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { tasksReducer } from './tasks-reducer';
-import { todolistsReducer } from './todolists-reducer';
-import { combineReducers, compose, legacy_createStore, applyMiddleware, AnyAction } from 'redux';
-import thunk, { ThunkDispatch } from 'redux-thunk';
+import { tasksReducer } from '../features/Todolists/tasks-reducer';
+import { todolistsReducer } from '../features/Todolists/todolists-reducer';
+import { UnknownAction, combineReducers } from 'redux';
+import { ThunkDispatch } from 'redux-thunk';
 import { appReducer } from './app-reducer';
-import { authReducer } from './auth-reducer';
+import { authReducer } from '../features/Login/auth-reducer';
+import { configureStore } from '@reduxjs/toolkit';
 
-declare global {
-  interface Window {
-    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
-  }
-}
 // объединяя reducer-ы с помощью combineReducers,
 // мы задаём структуру нашего единственного объекта-состояния
 const rootReducer = combineReducers({
@@ -20,12 +16,11 @@ const rootReducer = combineReducers({
   app: appReducer,
   auth: authReducer,
 });
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 // непосредственно создаём store
-export const store = legacy_createStore(rootReducer, applyMiddleware(thunk));
+export const store = configureStore({ reducer: rootReducer });
 // определить автоматически тип всего объекта состояния
 export type StateType = ReturnType<typeof rootReducer>;
-export type AppDispatchType = ThunkDispatch<StateType, unknown, AnyAction>;
+export type AppDispatchType = ThunkDispatch<StateType, unknown, UnknownAction>;
 export const useAppDispatch = useDispatch<AppDispatchType>;
 export const useAppSelector: TypedUseSelectorHook<StateType> = useSelector;
 

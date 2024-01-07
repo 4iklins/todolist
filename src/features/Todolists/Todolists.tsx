@@ -1,10 +1,10 @@
 import { Grid, Paper } from '@mui/material';
-import Todolist from '../../components/Todolist/Todolist';
-import { TodolistDomainType, addTodolistTC, fetchTodolistsTC } from '../../state/todolists-reducer';
+import Todolist from './Todolist/Todolist';
+import { TodolistDomainType, addTodolistTC, fetchTodolistsTC } from './todolists-reducer';
 import AddItemForm from '../../components/AddItemForm/AddItemForm';
-import { useAppDispatch, useAppSelector } from '../../state/store';
-import { RequestStatusType } from '../../state/app-reducer';
-import { useCallback, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/store';
+import { RequestStatusType } from '../../app/app-reducer';
+import React, { useCallback, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 
 const Todolists = () => {

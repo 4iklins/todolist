@@ -3,22 +3,21 @@ import {
   Button,
   CircularProgress,
   Container,
-  Grid,
   IconButton,
   LinearProgress,
-  Paper,
   Toolbar,
   Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { useAppDispatch, useAppSelector } from './state/store';
-import { RequestStatusType, initializeAppTC } from './state/app-reducer';
-import { ErrorSnackBar } from './components/ErrorSnackBar/ErrorSnackBar';
-import Todolists from './features/Todolists/Todolists';
+import { useAppDispatch, useAppSelector } from './store';
+import { RequestStatusType, initializeAppTC } from './app-reducer';
+import { ErrorSnackBar } from '../components/ErrorSnackBar/ErrorSnackBar';
+import Todolists from '../features/Todolists/Todolists';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { Login } from './features/Login/Login';
+import { Login } from '../features/Login/Login';
 import { useEffect } from 'react';
-import { logoutTC } from './state/auth-reducer';
+import { logoutTC } from '../features/Login/auth-reducer';
+import React from 'react';
 
 function App() {
   const status: RequestStatusType = useAppSelector(state => state.app.status);
