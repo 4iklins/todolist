@@ -1,7 +1,7 @@
 import { TaskPriorities, TaskStatuses, TaskType } from '../../api/todolist-api';
 import { TasksStateType, addTaskAC, deleteTaskAC, setTasksAC, tasksReducer, updateTaskAC } from './tasks-reducer';
 
-import { addTodolistAC, deleteTodolistAC, setTodolistsAC } from './todolists-reducer';
+import { addTodolistAC, deleteTodolistAC, setTodolistsAC } from './todolists-slice';
 
 let startState: TasksStateType = {};
 beforeEach(() => {
@@ -119,7 +119,7 @@ test('correct task should be added to correct array', () => {
     priority: 0,
     startDate: '',
     id: 'id exists',
-    completed: false
+    completed: false,
   });
 
   const endState = tasksReducer(startState, action);

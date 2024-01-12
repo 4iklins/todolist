@@ -1,9 +1,9 @@
-import { Dispatch } from 'redux';
-import { setAppStatusAC } from '../../app/app-reducer';
+import { appActions } from '../../app/app-slice';
 import { LoginParamsType, authApi } from '../../api/auth-api';
 import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
-import { clearTodolistsAC } from '../Todolists/todolists-reducer';
+import { todolistsActions } from '../Todolists/todolists-slice';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { AppDispatchType, AppThunk } from '../../app/store';
 
 const initialState = {
   isLoggedIn: false,
@@ -23,14 +23,14 @@ export const authReducer = slice.reducer;
 export const authActions = slice.actions;
 
 // thunks
-export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
-  dispatch(setAppStatusAC('loading'));
+export const loginTC = (data: LoginParamsType) => (dispatch: AppDispatchType) => {
+  dispatch(appActions.setAppStatus({ status: 'loading' }));
   return authApi
     .login(data)
     .then(res => {
       if (res.data.resultCode === 0) {
         dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }));
-        dispatch(setAppStatusAC('succeeded'));
+        dispatch(appActions.setAppStatus({ status: 'succeeded' }));
       } else {
         handleServerAppError(res.data, dispatch);
         return res.data;
@@ -41,15 +41,15 @@ export const loginTC = (data: LoginParamsType) => (dispatch: Dispatch) => {
     });
 };
 
-export const logoutTC = () => (dispatch: Dispatch) => {
-  dispatch(setAppStatusAC('loading'));
+export const logoutTC = (): AppThunk => dispatch => {
+  dispatch(appActions.setAppStatus({ status: 'loading' }));
   authApi
     .logout()
     .then(res => {
       if (res.data.resultCode === 0) {
         dispatch(authActions.setIsLoggedIn({ isLoggedIn: false }));
-        dispatch(setAppStatusAC('succeeded'));
-        dispatch(clearTodolistsAC());
+        dispatch(appActions.setAppStatus({ status: 'succeeded' }));
+        dispatch(todolistsActions.clearTodolists());
       } else {
         handleServerAppError(res.data, dispatch);
       }

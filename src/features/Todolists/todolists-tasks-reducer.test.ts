@@ -1,4 +1,4 @@
-import { addTodolistAC, TodolistDomainType, todolistsReducer } from './todolists-reducer';
+import { addTodolistAC, TodolistDomainType, todolistsReducer } from './todolists-slice';
 import { tasksReducer, TasksStateType } from './tasks-reducer';
 import { TodolistType } from '../../api/todolist-api';
 
