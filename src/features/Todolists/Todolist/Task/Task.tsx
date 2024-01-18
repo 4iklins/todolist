@@ -3,7 +3,7 @@ import EditableSpan from '../../../../components/EditableSpan/EditableSpan';
 import { Checkbox, IconButton, ListItem } from '@mui/material';
 import React, { ChangeEvent, memo } from 'react';
 import { TaskStatuses } from '../../../../api/todolist-api';
-import { TaskDomainType } from '../../tasks-reducer';
+import { TaskDomainType } from '../../tasks-slice';
 
 interface TaskProps extends TaskDomainType {
   onChangeStatus: (taskId: string, status: TaskStatuses) => void;

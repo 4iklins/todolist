@@ -1,28 +1,10 @@
-import {
-  AddTodoListAT,
-  ClearTodolistsAT,
-  DeleteTodolistAT,
-  SetTodolistsAT,
-  changeTodolistEntityStatusAC,
-  todolistsActions,
-} from './todolists-slice';
-import { TaskType, TaskUpdateType, todolistApi } from '../../api/todolist-api';
+import { todolistsActions } from './todolists-slice';
+import { TaskType, TaskUpdateType, TodolistType, todolistApi } from '../../api/todolist-api';
 import { StateType } from '../../app/store';
 import { Dispatch } from 'redux';
 import { RequestStatusType, appActions } from '../../app/app-slice';
 import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-
-export type ActionsTasksType =
-  | ReturnType<typeof setTasksAC>
-  | ReturnType<typeof addTaskAC>
-  | ReturnType<typeof deleteTaskAC>
-  | ReturnType<typeof updateTaskAC>
-  | AddTodoListAT
-  | DeleteTodolistAT
-  | SetTodolistsAT
-  | ReturnType<typeof changeTaskEntityStatusAC>
-  | ClearTodolistsAT;
 
 export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
 export type TasksStateType = {
@@ -67,62 +49,25 @@ const slice = createSlice({
       }
     },
   },
+  extraReducers: builder => {
+    builder
+      .addCase(todolistsActions.addTodolist, (state, action: PayloadAction<{ todolist: TodolistType }>) => {
+        state[action.payload.todolist.id] = [];
+      })
+      .addCase(todolistsActions.deleteTodolist, (state, action: PayloadAction<{ todolistId: string }>) => {
+        delete state[action.payload.todolistId];
+      })
+      .addCase(todolistsActions.setTodolists, (state, action: PayloadAction<{ todoLists: TodolistType[] }>) => {
+        action.payload.todoLists.forEach(tl => (state[tl.id] = []));
+      })
+      .addCase(todolistsActions.clearTodolists, () => {
+        return {};
+      });
+  },
 });
 
-export const tasksReducer = (state = initialState, action: ActionsTasksType): TasksStateType => {
-  switch (action.type) {
-    case 'SET-TODOS':
-      const stateCopy = { ...state };
-      action.payload.todoLists.forEach(tl => {
-        stateCopy[tl.id] = [];
-      });
-      return stateCopy;
-    case 'SET-TASKS':
-      return {
-        ...state,
-        [action.payload.todolistId]: action.payload.tasks.map(task => ({ ...task, entityStatus: 'idle' })),
-      };
-    case 'DELETE-TASK':
-      return {
-        ...state,
-        [action.payload.todolistId]: state[action.payload.todolistId].filter(tl => tl.id !== action.payload.taskId),
-      };
-    case 'ADD-TASK':
-      return {
-        ...state,
-        [action.payload.task.todoListId]: [
-          { ...action.payload.task, entityStatus: 'idle' },
-          ...state[action.payload.task.todoListId],
-        ],
-      };
-    case 'UPDATE-TASK':
-      return {
-        ...state,
-        [action.payload.todolistId]: state[action.payload.todolistId].map(task =>
-          task.id === action.payload.taskId ? { ...task, ...action.payload.task, entityStatus: 'succeeded' } : task
-        ),
-      };
-    case 'ADD-TODOLIST':
-      return { ...state, [action.payload.todolist.id]: [] };
-    case 'DELETE-TODOLIST':
-      const {
-        [action.payload.todolistId]: [],
-        ...rest
-      } = state;
-      return rest;
-    case 'CHANGE-TASK-ENTITY-STATUS':
-      return {
-        ...state,
-        [action.payload.todolistId]: state[action.payload.todolistId].map(task =>
-          task.id === action.payload.taskId ? { ...task, entityStatus: action.payload.status } : task
-        ),
-      };
-    case 'CLEAR-TODOS':
-      return {};
-    default:
-      return state;
-  }
-};
+export const tasksReducer = slice.reducer;
+export const tasksActions = slice.actions;
 
 export const fetchTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
   dispatch(appActions.setAppStatus({ status: 'loading' }));
@@ -130,7 +75,7 @@ export const fetchTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
     .getTasks(todolistId)
     .then(res => {
       if (!res.data.error) {
-        dispatch(setTasksAC(res.data.items, todolistId));
+        dispatch(tasksActions.setTasks({ tasks: res.data.items, todolistId }));
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
       } else {
         if (res.data.error) {
@@ -146,42 +91,35 @@ export const fetchTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
     });
 };
 
-export const setTasksAC = (tasks: TaskType[], todolistId: string) => {
-  return { type: 'SET-TASKS', payload: { tasks, todolistId } } as const;
-};
-
 export const deleteTaskTC = (todolistId: string, taskId: string) => (dispatch: Dispatch) => {
   dispatch(appActions.setAppStatus({ status: 'loading' }));
-  dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'loading'));
+  dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'loading' }));
   todolistApi
     .deleteTask(todolistId, taskId)
     .then(res => {
       if (res.data.resultCode === 0) {
-        dispatch(deleteTaskAC(taskId, todolistId));
+        dispatch(tasksActions.deleteTask({ taskId, todolistId }));
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
       } else {
         handleServerAppError(res.data, dispatch);
-        dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+        dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'failed' }));
       }
     })
     .catch(e => {
       handleServerNetworkError(e, dispatch);
-      dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+      dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'failed' }));
     });
-};
-export const deleteTaskAC = (taskId: string, todolistId: string) => {
-  return { type: 'DELETE-TASK', payload: { taskId, todolistId } } as const;
 };
 
 export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispatch) => {
   dispatch(appActions.setAppStatus({ status: 'loading' }));
-  dispatch(changeTodolistEntityStatusAC(todolistId, 'loading'));
+  dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'loading' }));
   todolistApi
     .createTask(todolistId, title)
     .then(res => {
       if (res.data.resultCode === 0) {
-        dispatch(addTaskAC(res.data.data.item));
-        dispatch(changeTodolistEntityStatusAC(todolistId, 'succeeded'));
+        dispatch(tasksActions.addTask({ task: res.data.data.item }));
+        dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'succeeded' }));
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
       } else {
         handleServerAppError(res.data, dispatch);
@@ -192,9 +130,6 @@ export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispa
       handleServerNetworkError(e, dispatch);
       dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId: todolistId, entityStatus: 'failed' }));
     });
-};
-export const addTaskAC = (task: TaskType) => {
-  return { type: 'ADD-TASK', payload: { task } } as const;
 };
 
 export const updateTaskTC =
@@ -213,29 +148,21 @@ export const updateTaskTC =
         ...model,
       };
       dispatch(appActions.setAppStatus({ status: 'loading' }));
-      dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'loading'));
+      dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'loading' }));
       todolistApi
         .updateTask(todolistId, taskId, taskModel)
         .then(res => {
           if (res.data.resultCode === 0) {
-            dispatch(updateTaskAC(taskId, res.data.data.item, todolistId));
+            dispatch(tasksActions.updateTask({ taskId, task: res.data.data.item, todolistId }));
             dispatch(appActions.setAppStatus({ status: 'succeeded' }));
           } else {
             handleServerAppError(res.data, dispatch);
-            dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+            dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'failed' }));
           }
         })
         .catch(e => {
           handleServerNetworkError(e, dispatch);
-          dispatch(changeTaskEntityStatusAC(todolistId, taskId, 'failed'));
+          dispatch(tasksActions.changeTaskEntityStatus({ todolistId, taskId, entityStatus: 'failed' }));
         });
     }
   };
-
-export const updateTaskAC = (taskId: string, task: Partial<TaskType>, todolistId: string) => {
-  return { type: 'UPDATE-TASK', payload: { taskId, task, todolistId } } as const;
-};
-
-export const changeTaskEntityStatusAC = (todolistId: string, taskId: string, status: RequestStatusType) => {
-  return { type: 'CHANGE-TASK-ENTITY-STATUS', payload: { todolistId, taskId, status } } as const;
-};

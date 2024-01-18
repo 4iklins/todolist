@@ -3,7 +3,7 @@ import { TodolistType, todolistApi } from '../../api/todolist-api';
 import { Dispatch } from 'redux';
 import { RequestStatusType, appActions } from '../../app/app-slice';
 import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
-import { fetchTasksTC } from './tasks-reducer';
+import { fetchTasksTC } from './tasks-slice';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 
 export type FilterType = 'all' | 'completed' | 'active';
@@ -47,8 +47,8 @@ const slice = createSlice({
         state[index].entityStatus = action.payload.entityStatus;
       }
     },
-    clearTodolists: state => {
-      state = [];
+    clearTodolists: () => {
+      return [];
     },
   },
 });
@@ -120,6 +120,7 @@ export const changeTodolistTitleTC = (todolistId: string, title: string) => (dis
     .then(res => {
       if (res.data.resultCode === 0) {
         dispatch(todolistsActions.changeTodolistTitle({ todolistId, todolistTitle: title }));
+        dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'succeeded' }));
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
       } else {
         handleServerAppError(res.data, dispatch);

@@ -4,13 +4,8 @@ import Task from './Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
-import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../tasks-reducer';
-import {
-  TodolistDomainType,
-  changeTodolistFilterAC,
-  changeTodolistTitleTC,
-  deleteTodolistTC,
-} from '../todolists-slice';
+import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../tasks-slice';
+import { TodolistDomainType, changeTodolistTitleTC, deleteTodolistTC, todolistsActions } from '../todolists-slice';
 import React, { memo, useCallback, useMemo } from 'react';
 import Button from '../../../components/Button/Button';
 import { TaskStatuses } from '../../../api/todolist-api';
@@ -58,17 +53,16 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
   );
 
   const onAllClick = useCallback(() => {
-    dispatch(changeTodolistFilterAC(id, 'all'));
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'all' }));
   }, [id]);
   const onActiveClick = useCallback(() => {
-    dispatch(changeTodolistFilterAC(id, 'active'));
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'active' }));
   }, [id]);
   const onCompletedClick = useCallback(() => {
-    dispatch(changeTodolistFilterAC(id, 'completed'));
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'completed' }));
   }, [id]);
 
   const tasksForRender = useMemo(() => {
-    console.log('useMemo');
     if (filter === 'active') {
       return tasks.filter(task => task.status !== TaskStatuses.Completed);
     }
