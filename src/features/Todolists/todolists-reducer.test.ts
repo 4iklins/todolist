@@ -17,7 +17,10 @@ beforeEach(() => {
 });
 
 test('correct todolist should be removed', () => {
-  const endState = todolistsReducer(startState, todolistsActions.deleteTodolist({ todolistId: todolistId1 }));
+  const endState = todolistsReducer(
+    startState,
+    todolistsActions.deleteTodolist.fulfilled({ todolistId: todolistId1 }, '', '')
+  );
 
   expect(endState.length).toBe(1);
   expect(endState[0].id).toBe(todolistId2);
@@ -31,7 +34,7 @@ test('correct todolist should be added', () => {
     order: 0,
   };
 
-  const endState = todolistsReducer(startState, todolistsActions.addTodolist({ todolist }));
+  const endState = todolistsReducer(startState, todolistsActions.addTodolist.fulfilled({ todolist }, '', ''));
 
   expect(endState.length).toBe(3);
   expect(endState[0].title).toBe(todolist.title);
@@ -41,7 +44,11 @@ test('correct todolist should be added', () => {
 test('correct todolist should change its name', () => {
   let newTodolistTitle = 'New Todolist';
 
-  const action = todolistsActions.changeTodolistTitle({ todolistId: todolistId2, todolistTitle: newTodolistTitle });
+  const action = todolistsActions.changeTodolistTitle.fulfilled(
+    { todolistId: todolistId2, todolistTitle: newTodolistTitle },
+    '',
+    { title: newTodolistTitle, todolistId: newTodolistTitle }
+  );
 
   const endState = todolistsReducer(startState, action);
 
@@ -60,7 +67,7 @@ test('correct filter of todolist should be changed', () => {
   expect(endState[1].filter).toBe(newFilter);
 });
 test('todolists should be added', () => {
-  const action = todolistsActions.setTodolists({ todoLists: startState });
+  const action = todolistsActions.fetchTodolists.fulfilled({ todoLists: startState }, '', undefined);
 
   const endState = todolistsReducer([], action);
 

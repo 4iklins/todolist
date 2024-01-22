@@ -4,8 +4,8 @@ import Task from './Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
-import { TaskDomainType, addTaskTC, deleteTaskTC, updateTaskTC } from '../tasks-slice';
-import { TodolistDomainType, changeTodolistTitleTC, deleteTodolistTC, todolistsActions } from '../todolists-slice';
+import { TaskDomainType, tasksThunks } from '../tasks-slice';
+import { TodolistDomainType, todolistsActions } from '../todolists-slice';
 import React, { memo, useCallback, useMemo } from 'react';
 import Button from '../../../components/Button/Button';
 import { TaskStatuses } from '../../../api/todolist-api';
@@ -15,52 +15,52 @@ export interface TodoListProps {
 }
 
 const Todolist = memo(({ todolist }: TodoListProps) => {
-  const { id, title, filter, entityStatus } = todolist;
-  const tasks = useAppSelector<TaskDomainType[]>(state => state.tasks[id]);
+  const { id: todolistId, title, filter, entityStatus } = todolist;
+  const tasks = useAppSelector<TaskDomainType[]>(state => state.tasks[todolistId]);
   const dispatch = useAppDispatch();
 
   const addTask = useCallback(
     (title: string) => {
-      dispatch(addTaskTC(id, title));
+      dispatch(tasksThunks.addTask({ todolistId, title }));
     },
-    [id]
+    [todolistId]
   );
 
   const changeTodolistTitle = useCallback(
     (title: string) => {
-      dispatch(changeTodolistTitleTC(id, title));
+      dispatch(todolistsActions.changeTodolistTitle({todolistId, title}));
     },
-    [id]
+    [todolistId]
   );
 
   const changeTaskStatus = useCallback(
     (taskId: string, status: TaskStatuses) => {
-      dispatch(updateTaskTC(taskId, { status }, id));
+      dispatch(tasksThunks.updateTask({ taskId, model: { status }, todolistId }));
     },
-    [id]
+    [todolistId]
   );
   const removeTask = useCallback(
     (taskId: string) => {
-      dispatch(deleteTaskTC(id, taskId));
+      dispatch(tasksThunks.deleteTask({ todolistId, taskId }));
     },
-    [id]
+    [todolistId]
   );
   const changeTaskTitle = useCallback(
     (taskId: string, title: string) => {
-      dispatch(updateTaskTC(taskId, { title }, id));
+      dispatch(tasksThunks.updateTask({ taskId, model: { title }, todolistId }));
     },
-    [id]
+    [todolistId]
   );
 
   const onAllClick = useCallback(() => {
-    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'all' }));
-  }, [id]);
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: todolistId, filter: 'all' }));
+  }, [todolistId]);
   const onActiveClick = useCallback(() => {
-    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'active' }));
-  }, [id]);
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: todolistId, filter: 'active' }));
+  }, [todolistId]);
   const onCompletedClick = useCallback(() => {
-    dispatch(todolistsActions.changeTodolistFilter({ todolistId: id, filter: 'completed' }));
-  }, [id]);
+    dispatch(todolistsActions.changeTodolistFilter({ todolistId: todolistId, filter: 'completed' }));
+  }, [todolistId]);
 
   const tasksForRender = useMemo(() => {
     if (filter === 'active') {
@@ -78,7 +78,7 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
       <Typography variant='h6' component='h2' display={'flex'} mb={3}>
         <EditableSpan title={title} changeTitle={changeTodolistTitle} disabled={entityStatus === 'loading'} />
         <IconButton
-          onClick={() => dispatch(deleteTodolistTC(id))}
+          onClick={() => dispatch(todolistsActions.deleteTodolist(todolistId))}
           color='primary'
           sx={{ alignSelf: 'center', ml: 'auto', p: '2px' }}
           disabled={entityStatus === 'loading'}>

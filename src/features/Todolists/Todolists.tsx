@@ -1,11 +1,12 @@
 import { Grid, Paper } from '@mui/material';
 import Todolist from './Todolist/Todolist';
-import { TodolistDomainType, addTodolistTC, fetchTodolistsTC } from './todolists-slice';
+import { TodolistDomainType, todolistsActions } from './todolists-slice';
 import AddItemForm from '../../components/AddItemForm/AddItemForm';
 import { useAppDispatch, useAppSelector } from '../../app/store';
 import { RequestStatusType } from '../../app/app-slice';
 import React, { useCallback, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
+import { tasksThunks } from './tasks-slice';
 
 const Todolists = () => {
   const status: RequestStatusType = useAppSelector(state => state.app.status);
@@ -14,13 +15,17 @@ const Todolists = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     if (isLoggedIn) {
-      dispatch(fetchTodolistsTC());
+      dispatch(todolistsActions.fetchTodolists()).then(data => {
+        data.payload?.todoLists.forEach(todolist => {
+          dispatch(tasksThunks.fetchTasks(todolist.id));
+        });
+      });
     }
   }, []);
 
   const addTodolist = useCallback(
     (title: string) => {
-      dispatch(addTodolistTC(title));
+      dispatch(todolistsActions.addTodolist(title));
     },
     [dispatch]
   );
