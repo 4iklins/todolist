@@ -1,12 +1,12 @@
 import { Grid, Paper } from '@mui/material';
 import Todolist from './Todolist/Todolist';
 import { TodolistDomainType, todolistsActions } from './todolists-slice';
-import AddItemForm from '../../components/AddItemForm/AddItemForm';
 import { useAppDispatch, useAppSelector } from '../../app/store';
 import { RequestStatusType } from '../../app/app-slice';
 import React, { useCallback, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { tasksThunks } from './tasks-slice';
+import { AddItemForm } from '../../common/components';
 
 const Todolists = () => {
   const status: RequestStatusType = useAppSelector(state => state.app.status);

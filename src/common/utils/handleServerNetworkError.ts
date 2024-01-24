@@ -1,17 +1,6 @@
-import { Dispatch } from 'redux';
-import { ResponseType } from '../api/todolist-api';
-import { appActions } from '../app/app-slice';
 import axios from 'axios';
-
-// generic function
-export const handleServerAppError = <T>(data: ResponseType<T>, dispatch: Dispatch) => {
-  if (data.messages.length) {
-    dispatch(appActions.setAppError({ error: data.messages[0] }));
-  } else {
-    dispatch(appActions.setAppError({ error: 'Some error occurred' }));
-  }
-  dispatch(appActions.setAppStatus({ status: 'failed' }));
-};
+import { appActions } from '../../app/app-slice';
+import { Dispatch } from 'redux';
 
 export const handleServerNetworkError = (err: unknown, dispatch: Dispatch): void => {
   let errorMessage = 'Some error occurred';

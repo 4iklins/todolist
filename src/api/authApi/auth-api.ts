@@ -1,16 +1,6 @@
-import { ResponseType } from './todolist-api';
-import { instance } from './instance';
-
-export type LoginParamsType = {
-  email: string;
-  password: string;
-  rememberMe: boolean;
-};
-export type IsAuthorizeType = {
-  id: number;
-  email: string;
-  login: string;
-};
+import { ResponseType } from '../todolistApi';
+import { instance } from '../instance';
+import { IsAuthorizeType, LoginParamsType } from './authApi.types';
 
 export const authApi = {
   login(params: LoginParamsType) {

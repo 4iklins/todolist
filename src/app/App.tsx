@@ -11,13 +11,13 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAppDispatch, useAppSelector } from './store';
 import { RequestStatusType, initializeAppTC } from './app-slice';
-import { ErrorSnackBar } from '../components/ErrorSnackBar/ErrorSnackBar';
 import Todolists from '../features/Todolists/Todolists';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Login } from '../features/Login/Login';
 import { useEffect } from 'react';
 import { logoutTC } from '../features/Login/auth-slice';
 import React from 'react';
+import { ErrorSnackBar } from '../common/components';
 
 function App() {
   const status: RequestStatusType = useAppSelector(state => state.app.status);

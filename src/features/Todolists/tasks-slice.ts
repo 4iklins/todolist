@@ -1,11 +1,12 @@
 import { todolistsActions } from './todolists-slice';
-import { TaskType, TaskUpdateType, TodolistType, todolistApi } from '../../api/todolist-api';
-import { StateType } from '../../app/store';
-import { Dispatch } from 'redux';
+import { todolistApi } from '../../api';
 import { RequestStatusType, appActions } from '../../app/app-slice';
-import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
-import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { createAppAsyncThunk } from '../../utils/create-app-async-thunk';
+import { handleServerAppError } from '../../common/utils';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { createAppAsyncThunk } from '../../common/utils';
+import { handleServerNetworkError } from '../../common/utils';
+import { TaskType, TaskUpdateType, TodolistType } from '../../api/todolistApi';
+import { ResultCode } from '../../common/enums';
 
 export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
 export type TasksStateType = {
@@ -105,7 +106,7 @@ const deleteTask = createAppAsyncThunk<{ todolistId: string; taskId: string }, {
     );
     try {
       const res = await todolistApi.deleteTask(arg.todolistId, arg.taskId);
-      if (res.data.resultCode === 0) {
+      if (res.data.resultCode === ResultCode.success) {
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
         return { taskId: arg.taskId, todolistId: arg.todolistId };
       } else {
@@ -137,7 +138,7 @@ const addTask = createAppAsyncThunk<{ task: TaskType }, { todolistId: string; ti
     dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId: arg.todolistId, entityStatus: 'loading' }));
     try {
       const res = await todolistApi.createTask(arg);
-      if (res.data.resultCode === 0) {
+      if (res.data.resultCode === ResultCode.success) {
         dispatch(
           todolistsActions.changeTodolistEntityStatus({ todolistId: arg.todolistId, entityStatus: 'succeeded' })
         );
@@ -178,7 +179,7 @@ const updateTask = createAppAsyncThunk<
     );
     try {
       const res = await todolistApi.updateTask(arg.todolistId, arg.taskId, taskModel);
-      if (res.data.resultCode === 0) {
+      if (res.data.resultCode === ResultCode.success) {
         dispatch(appActions.setAppStatus({ status: 'succeeded' }));
         return { taskId: arg.taskId, task: res.data.data.item, todolistId: arg.todolistId };
       } else {

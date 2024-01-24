@@ -1,5 +1,3 @@
-import AddItemForm from '../../../components/AddItemForm/AddItemForm';
-import EditableSpan from '../../../components/EditableSpan/EditableSpan';
 import Task from './Task/Task';
 import { Box, IconButton, List, Typography } from '@mui/material';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -7,8 +5,9 @@ import { useAppDispatch, useAppSelector } from '../../../app/store';
 import { TaskDomainType, tasksThunks } from '../tasks-slice';
 import { TodolistDomainType, todolistsActions } from '../todolists-slice';
 import React, { memo, useCallback, useMemo } from 'react';
-import Button from '../../../components/Button/Button';
-import { TaskStatuses } from '../../../api/todolist-api';
+import { ButtonMemo } from '../../../common/components/Button/Button';
+import { AddItemForm, EditableSpan } from '../../../common/components';
+import { TaskStatuses } from '../../../common/enums';
 
 export interface TodoListProps {
   todolist: TodolistDomainType;
@@ -28,7 +27,7 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
 
   const changeTodolistTitle = useCallback(
     (title: string) => {
-      dispatch(todolistsActions.changeTodolistTitle({todolistId, title}));
+      dispatch(todolistsActions.changeTodolistTitle({ todolistId, title }));
     },
     [todolistId]
   );
@@ -110,15 +109,15 @@ const Todolist = memo(({ todolist }: TodoListProps) => {
       </List>
 
       <Box sx={{ 'button + button': { ml: 1 } }}>
-        <Button variant={filter === 'all' ? 'contained' : 'outlined'} size='small' onClick={onAllClick}>
+        <ButtonMemo variant={filter === 'all' ? 'contained' : 'outlined'} size='small' onClick={onAllClick}>
           All
-        </Button>
-        <Button variant={filter === 'active' ? 'contained' : 'outlined'} size='small' onClick={onActiveClick}>
+        </ButtonMemo>
+        <ButtonMemo variant={filter === 'active' ? 'contained' : 'outlined'} size='small' onClick={onActiveClick}>
           Active
-        </Button>
-        <Button variant={filter === 'completed' ? 'contained' : 'outlined'} size='small' onClick={onCompletedClick}>
+        </ButtonMemo>
+        <ButtonMemo variant={filter === 'completed' ? 'contained' : 'outlined'} size='small' onClick={onCompletedClick}>
           Completed
-        </Button>
+        </ButtonMemo>
       </Box>
     </div>
   );

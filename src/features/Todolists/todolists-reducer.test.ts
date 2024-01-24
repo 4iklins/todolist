@@ -1,7 +1,7 @@
 import { todolistsActions, FilterType, TodolistDomainType, todolistsReducer } from './todolists-slice';
 import { v1 } from 'uuid';
-import { TodolistType } from '../../api/todolist-api';
 import { RequestStatusType } from '../../app/app-slice';
+import { TodolistType } from '../../api/todolistApi';
 
 let todolistId1: string;
 let todolistId2: string;

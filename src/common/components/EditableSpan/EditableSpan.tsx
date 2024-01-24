@@ -8,7 +8,7 @@ interface EditableSpanPropsType {
   disabled: boolean;
 }
 
-const EditableSpan = memo(({ title, disabled, changeTitle }: EditableSpanPropsType) => {
+export const EditableSpan = memo(({ title, disabled, changeTitle }: EditableSpanPropsType) => {
   const [editmode, setEditmode] = useState<boolean>(false);
   const [text, setText] = useState<string>('');
   const activeEditMode = () => {
@@ -33,4 +33,4 @@ const EditableSpan = memo(({ title, disabled, changeTitle }: EditableSpanPropsTy
   );
 });
 
-export default EditableSpan;
+

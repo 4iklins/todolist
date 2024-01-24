@@ -1,4 +1,5 @@
-import { TaskPriorities, TaskStatuses, TaskType } from '../../api/todolist-api';
+
+import { TaskPriorities, TaskStatuses } from '../../common/enums';
 import { TasksStateType, tasksReducer, tasksActions, tasksThunks } from './tasks-slice';
 
 import { todolistsActions } from './todolists-slice';

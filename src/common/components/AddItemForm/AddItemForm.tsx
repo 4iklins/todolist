@@ -10,7 +10,7 @@ export interface AddItemFormType {
   disabled: boolean;
 }
 
-const AddItemForm = memo((props: AddItemFormType) => {
+export const AddItemForm = memo((props: AddItemFormType) => {
   const [title, setTitle] = useState<string>('');
   const [error, setError] = useState<boolean>(false);
   const onInputChangeHandler = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -64,4 +64,3 @@ const AddItemForm = memo((props: AddItemFormType) => {
   );
 });
 
-export default AddItemForm;

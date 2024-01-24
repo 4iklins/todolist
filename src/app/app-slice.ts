@@ -1,8 +1,10 @@
 import { Dispatch } from 'redux';
-import { authApi } from '../api/auth-api';
-import { handleServerAppError, handleServerNetworkError } from '../utils/error-utils';
+import { authApi } from '../api/authApi/auth-api';
+import { handleServerAppError } from '../common/utils';
 import { authActions } from '../features/Login/auth-slice';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
+import { handleServerNetworkError } from '../common/utils';
+import { ResultCode } from '../common/enums';
 
 export type RequestStatusType = 'idle' | 'loading' | 'succeeded' | 'failed';
 
@@ -37,7 +39,7 @@ export const initializeAppTC = () => (dispatch: Dispatch) => {
   authApi
     .me()
     .then(res => {
-      if (res.data.resultCode === 0) {
+      if (res.data.resultCode === ResultCode.success) {
         dispatch(authActions.setIsLoggedIn({ isLoggedIn: true }));
       } else {
         handleServerAppError(res.data, dispatch);

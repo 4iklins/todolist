@@ -1,10 +1,12 @@
-import { TodolistType, todolistApi } from '../../api/todolist-api';
-import { Dispatch } from 'redux';
+
 import { RequestStatusType, appActions } from '../../app/app-slice';
-import { handleServerAppError, handleServerNetworkError } from '../../utils/error-utils';
+import { handleServerAppError } from '../../common/utils';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { createAppSlice } from '../../utils/create-app-slice';
-import { StateType } from '../../app/store';
+import { createAppSlice } from '../../common/utils';
+import { handleServerNetworkError } from '../../common/utils';
+import { TodolistType } from '../../api/todolistApi';
+import { todolistApi } from '../../api';
+import { ResultCode } from '../../common/enums';
 
 export type FilterType = 'all' | 'completed' | 'active';
 export type TodolistDomainType = TodolistType & { filter: FilterType; entityStatus: RequestStatusType };
@@ -61,7 +63,7 @@ const slice = createAppSlice({
           dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'loading' }));
           try {
             const res = await todolistApi.deleteTodo(todolistId);
-            if (res.data.resultCode === 0) {
+            if (res.data.resultCode === ResultCode.success) {
               dispatch(appActions.setAppStatus({ status: 'succeeded' }));
               return { todolistId };
             } else {
@@ -90,7 +92,7 @@ const slice = createAppSlice({
           dispatch(appActions.setAppStatus({ status: 'loading' }));
           try {
             const res = await todolistApi.createTodo(title);
-            if (res.data.resultCode === 0) {
+            if (res.data.resultCode === ResultCode.success) {
               dispatch(appActions.setAppStatus({ status: 'succeeded' }));
               return { todolist: res.data.data.item };
             } else {
@@ -116,7 +118,7 @@ const slice = createAppSlice({
           dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'loading' }));
           try {
             const res = await todolistApi.updateTodo(todolistId, title);
-            if (res.data.resultCode === 0) {
+            if (res.data.resultCode === ResultCode.success) {
               dispatch(todolistsActions.changeTodolistEntityStatus({ todolistId, entityStatus: 'succeeded' }));
               dispatch(appActions.setAppStatus({ status: 'succeeded' }));
               return { todolistId, todolistTitle: title };

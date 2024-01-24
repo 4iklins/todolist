@@ -9,10 +9,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import { useFormik } from 'formik';
 import { Link } from '@mui/material';
-import { LoginParamsType } from '../../api/auth-api';
 import { useAppDispatch, useAppSelector } from '../../app/store';
 import { loginTC } from './auth-slice';
 import { Navigate } from 'react-router-dom';
+import { LoginParamsType } from '../../api/authApi';
 
 const EMAIL_REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 export const Login = () => {
