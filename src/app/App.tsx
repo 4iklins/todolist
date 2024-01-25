@@ -10,14 +10,14 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useAppDispatch, useAppSelector } from './store';
-import { RequestStatusType, initializeAppTC } from './app-slice';
+import { RequestStatusType } from './app-slice';
 import Todolists from '../features/Todolists/Todolists';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { Login } from '../features/Login/Login';
 import { useEffect } from 'react';
-import { logoutTC } from '../features/Login/auth-slice';
 import React from 'react';
 import { ErrorSnackBar } from '../common/components';
+import { authActions } from '../features/Login/auth-slice';
 
 function App() {
   const status: RequestStatusType = useAppSelector(state => state.app.status);
@@ -26,10 +26,10 @@ function App() {
   const dispatch = useAppDispatch();
 
   const logout = () => {
-    dispatch(logoutTC());
+    dispatch(authActions.logout());
   };
   useEffect(() => {
-    dispatch(initializeAppTC());
+    dispatch(authActions.initializeApp());
   }, []);
 
   if (!isInitialized) {

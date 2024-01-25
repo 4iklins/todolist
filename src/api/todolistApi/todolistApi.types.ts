@@ -36,6 +36,7 @@ export type ResponseType<T = {}> = {
   messages: string[];
   fieldsError: string[];
   data: T;
+  fieldsErrors: FieldsErrors[];
 };
 
 export type GetTasksResponseType = {
@@ -43,3 +44,4 @@ export type GetTasksResponseType = {
   totalCount: number;
   error: string;
 };
+export type FieldsErrors = { field: string; error: string };

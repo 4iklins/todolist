@@ -20,10 +20,9 @@ export const store = configureStore({ reducer: rootReducer });
 // определить автоматически тип всего объекта состояния
 
 export type StateType = ReturnType<typeof store.getState>; //типизация стэйта
-export type AppDispatchType = ThunkDispatch<StateType, unknown, UnknownAction>; //типизаци диспатча для санок
-export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, StateType, unknown, UnknownAction>; //типизация санок
+export type AppDispatch = typeof store.dispatch;
 
-export const useAppDispatch = useDispatch<AppDispatchType>; //кастомный хук возвращает протипизированный диспатч
+export const useAppDispatch = useDispatch<AppDispatch>; //кастомный хук возвращает протипизированный диспатч
 export const useAppSelector: TypedUseSelectorHook<StateType> = useSelector; //протипизированный стэйтом селект
 
 // а это, чтобы можно было в консоли браузера обращаться к store в любой момент

@@ -12,4 +12,7 @@ export const authApi = {
   logout() {
     return instance.delete<ResponseType>('/auth/login');
   },
+  captcha() {
+    return instance.get<{ url: string }>('/security/get-captcha-url');
+  },
 };

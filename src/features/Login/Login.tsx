@@ -10,13 +10,14 @@ import Button from '@mui/material/Button';
 import { useFormik } from 'formik';
 import { Link } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../app/store';
-import { loginTC } from './auth-slice';
 import { Navigate } from 'react-router-dom';
 import { LoginParamsType } from '../../api/authApi';
+import { authActions } from './auth-slice';
 
 const EMAIL_REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 export const Login = () => {
   const isLoggedIn = useAppSelector<boolean>(state => state.auth.isLoggedIn);
+  const captcha = useAppSelector<string | null>(state => state.auth.captcha);
   const dispatch = useAppDispatch();
   const { values, handleSubmit, handleChange, errors, touched, getFieldProps, resetForm, isSubmitting } =
     useFormik<LoginParamsType>({
@@ -24,13 +25,17 @@ export const Login = () => {
         email: '',
         password: '',
         rememberMe: false,
+        captcha: null,
       },
       onSubmit: async values => {
-        await dispatch(loginTC(values)).then(data => {
-          if (data?.resultCode === 0) {
-            resetForm();
-          }
-        });
+        await dispatch(authActions.login(values))
+          .unwrap()
+          .then(res => {
+            if (res.isLoggedIn) resetForm();
+          })
+          .catch(e => {
+            debugger;
+          });
       },
       validate: values => {
         const errors: Partial<LoginParamsType> = {};
@@ -43,6 +48,9 @@ export const Login = () => {
           errors.password = 'Required';
         } else if (values.password.length <= 3) {
           errors.password = 'Password must be more than 3 characters';
+        }
+        if (captcha && !values.captcha) {
+          errors.captcha = 'Required';
         }
         return errors;
       },
@@ -94,6 +102,17 @@ export const Login = () => {
                 label={'Remember me'}
                 control={<Checkbox name='rememberMe' checked={values.rememberMe} onChange={handleChange} />}
               />
+              {captcha && <img src={captcha}></img>}
+              {captcha && (
+                <TextField
+                  size='small'
+                  type='text'
+                  label='Captcha'
+                  {...getFieldProps('captcha')}
+                  error={touched.captcha && !!errors.captcha}
+                  helperText={touched.captcha && errors.captcha}
+                />
+              )}
               <Button
                 type={'submit'}
                 variant={'contained'}
