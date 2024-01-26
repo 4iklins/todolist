@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../app/store';
 import { Navigate } from 'react-router-dom';
 import { LoginParamsType } from '../../api/authApi';
 import { authActions } from './auth-slice';
+import { ResponseType } from '../../api/todolistApi';
 
 const EMAIL_REGEXP = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
 export const Login = () => {
@@ -27,14 +28,14 @@ export const Login = () => {
         rememberMe: false,
         captcha: null,
       },
-      onSubmit: async values => {
+      onSubmit: async (values, formikHelpers) => {
         await dispatch(authActions.login(values))
           .unwrap()
           .then(res => {
             if (res.isLoggedIn) resetForm();
           })
-          .catch(e => {
-            debugger;
+          .catch((e: ResponseType) => {
+            e.fieldsErrors?.forEach(el => formikHelpers.setFieldError(el.field, el.error));
           });
       },
       validate: values => {

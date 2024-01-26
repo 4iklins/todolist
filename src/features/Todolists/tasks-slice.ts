@@ -7,6 +7,7 @@ import { createAppAsyncThunk } from '../../common/utils';
 import { handleServerNetworkError } from '../../common/utils';
 import { TaskType, TaskUpdateType, TodolistType } from '../../api/todolistApi';
 import { ResultCode } from '../../common/enums';
+import { thunkTryCatch } from '../../common/utils/thunkTryCatch';
 
 export type TaskDomainType = TaskType & { entityStatus: RequestStatusType };
 export type TasksStateType = {
@@ -98,8 +99,8 @@ const fetchTasks = createAppAsyncThunk<{ tasks: TaskType[]; todolistId: string }
 );
 const deleteTask = createAppAsyncThunk<{ todolistId: string; taskId: string }, { todolistId: string; taskId: string }>(
   `${slice.name}/deleteTask`,
-  async (arg, thunkApi) => {
-    const { dispatch, rejectWithValue } = thunkApi;
+  async (arg, thunkAPI) => {
+    const { dispatch, rejectWithValue } = thunkAPI;
     dispatch(appActions.setAppStatus({ status: 'loading' }));
     dispatch(
       tasksActions.changeTaskEntityStatus({ todolistId: arg.todolistId, taskId: arg.taskId, entityStatus: 'loading' })

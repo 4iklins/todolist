@@ -34,7 +34,6 @@ export type TaskUpdateType = {
 export type ResponseType<T = {}> = {
   resultCode: ResultCode;
   messages: string[];
-  fieldsError: string[];
   data: T;
   fieldsErrors: FieldsErrors[];
 };

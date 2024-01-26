@@ -18,7 +18,7 @@ const slice = createAppSlice({
   initialState,
   reducers: create => {
     const createAppThunk = create.asyncThunk.withTypes<{
-      rejectValue: null | ResponseType | { captcha: string };
+      rejectValue: null | ResponseType ;
     }>();
     return {
       setIsLoggedIn: create.reducer((state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
